@@ -1,7 +1,7 @@
 import json
 
 
-with open('settings.json') as file:
+with open('./settings/settings.json') as file:
     data = dict(json.load(file))
 
     API_ID: str = data['API_ID']
