@@ -1,8 +1,9 @@
 from aiogram import Bot, Dispatcher, F
-from settings.settings import TOKEN
+from aiogram.methods import DeleteWebhook
 from aiogram.filters import Command
 from aiogram.types import Message
 from chatMembers import get_chat_members
+from settings.settings import TOKEN
 import asyncio
 
 
@@ -29,6 +30,7 @@ async def mention(message: Message) -> None:
 
 
 async def main():
+    await bot(DeleteWebhook(drop_pending_updates = True))
     await dp.start_polling(bot)
 
 
