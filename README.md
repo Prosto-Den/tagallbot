@@ -19,7 +19,7 @@ How to set up the bot?
 9) Run bot.py file
 
 
-At the forst launch you will be asked for ypur number. It is necessary to start your user bot.
+At the first launch you will be asked for ypur number. It is necessary to start your user bot.
 Don't forget to give admin rights to bot
 
 To tag users use command `/all` ot just tag the bot
