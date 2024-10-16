@@ -7,7 +7,7 @@ How to set up the bot?
 4) Create settings.json file in settings directory;
 5) Register on site https://my.telegram.org/auth. Get the API ID and API HASH values;
 6) Get the Bot token from [@BotFather](t.me/botfather);
-7) Copy this in your settings.json file. Replace words in quotation marks with your values:
+7) Copy this in your settings.json file. Replace values in file with yours:
 ```json
 {
    "API_HASH": "your api_hash value here",
