@@ -11,4 +11,4 @@ with open('./settings/settings.json') as file:
 
 """Do not change these values!!!"""
 MESSAGE_SYMBOLS_LIMIT: Final[int] = 2048
-MAX_MESSAGES_PER_MINUTE: Final[int] = 20
+MAX_MESSAGES_PER_MINUTE: Final[int] = 15
