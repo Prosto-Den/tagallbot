@@ -20,7 +20,6 @@ async def spam(message: Message) -> None:
         case [_, number, *word]: 
             try:
                 number = int(number)
-
                 if number <= 0:
                     raise ValueError
 
@@ -28,6 +27,7 @@ async def spam(message: Message) -> None:
 
                 """Ограничение на кол-во символов в сообщение - 2048.
                 Этим алгоритмом разрываем сообщение на несколько таким образом, чтобы разрыв не оказался посреди слов"""
+                message_counter = 0
                 while text:
                     index = 2048
 
@@ -38,8 +38,11 @@ async def spam(message: Message) -> None:
                                 break
                     
                     await bot.send_message(chat_id, text[:index])
-
                     text = text[index:]
+
+                    message_counter += 1
+                    if message_counter >= MAX_MESSAGES_PER_MINUTE:
+                        break
                     
             except ValueError:
                 await bot.send_message(chat_id, 'Нормально кол-во сообщений укажи')
