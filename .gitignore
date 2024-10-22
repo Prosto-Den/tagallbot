@@ -1,5 +1,5 @@
 settings.json
 __pycache__
-.venv
 my_account.session
 test.py
+.venv
