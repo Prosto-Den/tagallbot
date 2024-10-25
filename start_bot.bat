@@ -1,5 +1,5 @@
 call %~dp0.venv/Scripts/activate
 
-python bot.py
+python start_bot.py
 
 pause

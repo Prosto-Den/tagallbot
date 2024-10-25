@@ -3,3 +3,4 @@ __pycache__
 my_account.session
 test.py
 .venv
+.idea
