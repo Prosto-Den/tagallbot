@@ -1,13 +1,12 @@
 from bot import bot
 from aiogram.filters import Command
-from settings import COMMANDS, MAX_MESSAGES_PER_MINUTE
+from settings import COMMANDS, MAX_MESSAGES_PER_MINUTE, MESSAGE_SYMBOLS_LIMIT
 from aiogram import Router
 from getChatMembers import get_chat_members
 from aiogram.types import Message
 from aiogram import F
 
-
-messages_router = Router(name ='messages')
+messages_router = Router(name='messages')
 
 
 @messages_router.message(Command(commands=['help']))
@@ -19,34 +18,32 @@ async def help(message: Message) -> None:
 
 @messages_router.message(Command(commands=['spam']))
 async def spam(message: Message) -> None:
-    def check_values(number: int, lst: list) -> None:
+    def check_values(number: int, words: list) -> None:
         if number < 0:
             raise ValueError
-
-        if len(lst) == 0:
+        if len(words) < 1:
             raise SyntaxError
 
     chat_id: int = message.chat.id
 
-    message: list = message.text.split(' ')
+    enter: str = '\n' if '\n' in message.text else ' '
 
-    match message:
-        case [_, number, *word]:
+    message_text: list[str] = message.text.replace('\n', ' ').split(' ')
+    message_counter: int = 0
+
+    match message_text:
+        case [_, amount, *word]:
             try:
-                number: int = int(number)
-
+                number = int(amount)
                 check_values(number, word)
 
-                text: str = (' '.join(word) + ' ') * number
+                text: str = (' '.join(word) + enter) * number
 
-                """Ограничение на кол-во символов в сообщение - 2048.
-                Этим алгоритмом разрываем сообщение на несколько таким образом, чтобы разрыв не оказался посреди слова"""
-                message_counter = 0
                 while text:
-                    index = 2048
+                    index = MESSAGE_SYMBOLS_LIMIT
 
-                    if len(text) > 2048 and text[index] not in (' ', '\n'):
-                        for i in range(2048, 0, -1):
+                    if len(text) > MESSAGE_SYMBOLS_LIMIT and text[index] not in (' ', '\n'):
+                        for i in range(MESSAGE_SYMBOLS_LIMIT, 0, -1):
                             if text[i] in (' ', '\n'):
                                 index = i
                                 break
@@ -59,15 +56,13 @@ async def spam(message: Message) -> None:
                         break
 
             except ValueError:
-                await bot.send_message(chat_id, 'Нормально кол-во сообщений укажи')
+                await message.reply('Нормально кол-во сообщений укажи')
 
             except SyntaxError:
-                await bot.send_message(chat_id, 'Нормально команду напиши')
-        case _:
-            await bot.send_message(chat_id, 'Неправильно команду используешь')
+                await message.reply('Нормально команду напиши')
 
 
-@messages_router.message(Command(commands = ['all']))
+@messages_router.message(Command(commands=['all']))
 async def tag_all(message: Message) -> None:
     chat_id: int = message.chat.id
 
