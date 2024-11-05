@@ -6,7 +6,7 @@ import asyncio
 
 async def main():
     await bot(DeleteWebhook(drop_pending_updates = True))
-    dp.include_routers(messages_router, meme_router)
+    dp.include_routers(meme_router, messages_router)
     await dp.start_polling(bot)
 
 

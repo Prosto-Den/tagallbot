@@ -1,7 +1,7 @@
 from bot import bot
 from aiogram.filters import Command
 from settings import COMMANDS, MAX_MESSAGES_PER_MINUTE, MESSAGE_SYMBOLS_LIMIT
-from aiogram import Router
+from aiogram import Router, F
 from getChatMembers import get_chat_members
 from aiogram.types import Message
 from typing import NoReturn
@@ -74,6 +74,6 @@ async def tag_all(message: Message) -> None:
     await message.reply(text)
 
 
-@messages_router.message(CustomFilters.is_mentioned)
+@messages_router.message(F.text, CustomFilters.is_mentioned)
 async def mention(message: Message) -> None:
     await tag_all(message)

@@ -29,9 +29,21 @@ class Connection:
                                   (meme.id, meme.name.lower(), meme.tags))
         self.__connection.commit()
 
-    def get_meme(self, id: str) -> Meme:
+    def get_meme(self, id: str) -> Meme | None:
         cursor = self.__connection.cursor()
         cursor.execute('SELECT * FROM memes WHERE id=?', (id,))
+
+        if not cursor.fetchone():
+            return
+
         return Meme(*cursor.fetchone())
 
+    def get_all_memes(self) -> list[Meme]:
+        cursor = self.__connection.cursor()
+        cursor.execute('SELECT * FROM memes')
+        return [Meme(*row) for row in cursor.fetchall()]
 
+    def is_photo_in_db(self, photo_id: str) -> bool:
+        cursor = self.__connection.cursor()
+        cursor.execute('SELECT COUNT(*) FROM memes WHERE id=?', (photo_id,))
+        return cursor.fetchone()[0] > 0

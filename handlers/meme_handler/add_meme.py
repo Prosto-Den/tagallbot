@@ -40,11 +40,21 @@ async def save_picture(message: Message, state: FSMContext) -> None:
 
     photo_id: str = message.photo[0].file_id
 
+    if conn.is_photo_in_db(photo_id):
+        await message.reply('Мем с таким фото уже добавлен в базу')
+
+        return
+
     await state.update_data(photo_id=photo_id)
 
-    await bot.send_message(user_id, "Введи название мема")
+    if message.caption:
+        await state.update_data(name = message.caption)
+        await state.set_state(AddMeme.tags)
+        await bot.send_message(user_id, 'Добавить теги к мему?', reply_markup=ikb_confirm)
 
-    await state.set_state(AddMeme.name)
+    else:
+        await bot.send_message(user_id, "Введи название мема")
+        await state.set_state(AddMeme.name)
 
 
 @add_meme_router.message(AddMeme.name)
@@ -71,6 +81,8 @@ async def add_tags(call: CallbackQuery, state: FSMContext) -> None:
             await call.message.edit_text("Добавьте теги без значка #. "
                                          "Теги указывай через пробел, запятые можешь не ставить :)")
         case 'no':
+            await call.message.delete()
+
             data: dict = await state.get_data()
             meme = Meme(data['photo_id'], data['name'])
 
@@ -94,7 +106,7 @@ async def save_meme(call: CallbackQuery, state: FSMContext) -> None:
 
     match call.data.replace('con_', ''):
         case 'yes':
-            await conn.add_meme(meme)
+            conn.add_meme(meme)
             await call.message.edit_text('Мем успешно сохранён :)')
 
         case 'no':
