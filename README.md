@@ -16,7 +16,7 @@ How to set up the bot?
 }
 ```
 8) Add your bot to the group;
-9) Run bot.py file
+9) Run `start_bot.py` file
 
 
 At the first launch you will be asked for ypur number. It is necessary to start your user bot.
@@ -47,7 +47,7 @@ Bot was created on `Python 3.12.4` but I guess it should work on lower versions 
 }
 ```
 8) Добавьте бота в ваш чат;
-9) Запустите файл `bot.py`.
+9) Запустите файл `start_bot.py`.
 
 При первом запуске попросят ввести ваш номер телефона. Это нормально, это нужно для регистрации юзер бота от вашего имени (иначе нельзя получить список пользователей в чате)
 Не забудьте выдать боту права администратора.
