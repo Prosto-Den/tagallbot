@@ -1,7 +1,7 @@
 # Telegram bot for tagging all persons in chat
 
 How to set up the bot?
-1) Create virtual environment with `python -m venv .venv command` (write command in the terminal);
+1) Create virtual environment with `python -m venv .venv` command (write command in the terminal);
 2) Execute command `.venv/Scripts/activate` (on Windows) or `.venv/bin/activate` (on Linux);
 3) Install libraries with `pip install -r requirement.txt` command;
 4) Create settings.json file in settings directory;
