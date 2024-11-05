@@ -4,9 +4,11 @@ from settings import COMMANDS, MAX_MESSAGES_PER_MINUTE, MESSAGE_SYMBOLS_LIMIT
 from aiogram import Router
 from getChatMembers import get_chat_members
 from aiogram.types import Message
-from aiogram import F
+from typing import NoReturn
+from filters import CustomFilters
 
-messages_router = Router(name='messages')
+
+messages_router = Router()
 
 
 @messages_router.message(Command(commands=['help']))
@@ -18,14 +20,14 @@ async def help(message: Message) -> None:
 
 @messages_router.message(Command(commands=['spam']))
 async def spam(message: Message) -> None:
-    def check_values(number: int, words: list) -> None:
+    # функция для проверки валидности значений
+    def check_values(number: int, words: list) -> NoReturn | None:
         if number < 0:
             raise ValueError
         if len(words) < 1:
             raise SyntaxError
 
     chat_id: int = message.chat.id
-
     enter: str = '\n' if '\n' in message.text else ' '
 
     message_text: list[str] = message.text.replace('\n', ' ').split(' ')
@@ -40,10 +42,8 @@ async def spam(message: Message) -> None:
                 text: str = (' '.join(word) + enter) * number
 
                 while text:
-                    index = MESSAGE_SYMBOLS_LIMIT
-
-                    if len(text) > MESSAGE_SYMBOLS_LIMIT and text[index] not in (' ', '\n'):
-                        for i in range(MESSAGE_SYMBOLS_LIMIT, 0, -1):
+                    if len(text) > (index := MESSAGE_SYMBOLS_LIMIT) and text[index] not in (' ', '\n'):
+                        for i in range(index, 0, -1):
                             if text[i] in (' ', '\n'):
                                 index = i
                                 break
@@ -60,6 +60,8 @@ async def spam(message: Message) -> None:
 
             except SyntaxError:
                 await message.reply('Нормально команду напиши')
+        case _:
+            await message.reply('Нормально команду напиши')
 
 
 @messages_router.message(Command(commands=['all']))
@@ -72,9 +74,6 @@ async def tag_all(message: Message) -> None:
     await message.reply(text)
 
 
-@messages_router.message(F.text)
+@messages_router.message(CustomFilters.is_mentioned)
 async def mention(message: Message) -> None:
-    data = await bot.me()
-
-    if f'@{data.username}' in message.text:
-        await tag_all(message)
+    await tag_all(message)

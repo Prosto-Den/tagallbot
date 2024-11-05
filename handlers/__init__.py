@@ -1,1 +1,2 @@
-from handlers.message_handler.messages import messages_router
+from .message_handler import messages_router
+from .meme_handler import meme_router

@@ -1,1 +1,1 @@
-from .bot import bot, dp
+from .bot import bot, dp, conn
