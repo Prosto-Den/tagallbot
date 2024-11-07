@@ -1,2 +1,2 @@
-from .botMention import CustomFilters
+from .customFilters import CustomFilters
 

@@ -2,11 +2,13 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
-from keyboards import ikb_confirm
+from aiogram.types import ReplyKeyboardRemove
+from keyboards import ikb_confirm, cancel_kb
 from bot import bot, conn
 from aiogram import Router, F
 from settings import add_hashtags
 from database import Meme
+from filters import CustomFilters
 
 
 # машина состояний
@@ -28,10 +30,19 @@ async def add_meme(message: Message, state: FSMContext) -> None:
     if message.chat.type in ('group', 'supergroup'):
         user_id: int = message.from_user.id
         await message.delete()
-        await bot.send_message(user_id, 'Отправь мне мем')
+        await bot.send_message(user_id, 'Отправь мне мем', reply_markup = cancel_kb)
 
     elif message.chat.type == 'private':
-        await message.reply('Отправь мне мем')
+        await message.reply('Отправь мне мем', reply_markup = cancel_kb)
+
+
+@add_meme_router.message(Command(commands = ['cancel']))
+async def cancel_meme(message: Message, state: FSMContext) -> None:
+    current_state = await state.get_state()
+
+    if current_state is not None:
+        await state.clear()
+        await message.reply('Отменено', reply_markup = ReplyKeyboardRemove())
 
 
 @add_meme_router.message(AddMeme.picture, F.photo)
@@ -103,14 +114,17 @@ async def set_tags(message: Message, state: FSMContext) -> None:
 async def save_meme(call: CallbackQuery, state: FSMContext) -> None:
     data: dict = await state.get_data()
     meme: Meme = data['meme']
+    user_id: int = call.from_user.id
 
     match call.data.replace('con_', ''):
         case 'yes':
             conn.add_meme(meme)
-            await call.message.edit_text('Мем успешно сохранён :)')
+            await call.message.delete()
+            await bot.send_message(user_id, 'Мем успешно сохранён :)', reply_markup = ReplyKeyboardRemove())
 
         case 'no':
-            await call.message.edit_text('Мем не сохранён :(')
+            await call.message.delete()
+            await bot.send_message(user_id, 'Мем не сохранён :(', reply_markup=ReplyKeyboardRemove())
 
     await state.clear()
 
