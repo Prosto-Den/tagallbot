@@ -13,10 +13,10 @@ class SupportMessage:
 
     @staticmethod
     def get(chat_id: int) -> MessageState:
-        if __chats.get(chat_id):
-            return __chats[chat_id]
-        __chats[chat_id] = SupportMessage.MessageState()
-        return __chats[chat_id]
+        if SupportMessage.__chats.get(chat_id):
+            return SupportMessage.__chats[chat_id]
+        SupportMessage.__chats[chat_id] = SupportMessage.MessageState()
+        return SupportMessage.__chats[chat_id]
 
 
 
