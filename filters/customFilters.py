@@ -9,7 +9,8 @@ class SupportMessage:
     class MessageState:
         repeated_message: str = None
         sent_message: str = None
-    
+        user_id: int = None
+
     __chats: dict[int, MessageState] = {}
 
     @staticmethod
@@ -39,7 +40,10 @@ class CustomFilters:
     @staticmethod
     async def is_repeated(message: Message) -> bool:
         messages = SupportMessage.get(message.chat.id)
-        if messages.repeated_message == message.text and messages.sent_message != message.text:
+        if (messages.repeated_message == message.text and 
+            messages.sent_message != message.text and
+            message.from_user.id != messages.user_id):
             return True
         messages.repeated_message = message.text
+        messages.user_id = message.from_user.id
         return False
