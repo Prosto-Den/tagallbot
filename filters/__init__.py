@@ -1,2 +1,2 @@
-from .customFilters import CustomFilters, SupportMessage
+from .customFilters import CustomFilters
 

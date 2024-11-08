@@ -5,8 +5,7 @@ from aiogram import Router, F
 from getChatMembers import get_chat_members
 from aiogram.types import Message
 from typing import NoReturn
-from filters import CustomFilters, SupportMessage
-
+from filters import CustomFilters
 
 messages_router = Router()
 
@@ -78,7 +77,7 @@ async def tag_all(message: Message) -> None:
 async def mention(message: Message) -> None:
     await tag_all(message)
 
-@messages_router.message(F.text, CustomFilters.is_repeated)
-async def support(message: Message) -> None:
-    await message.send_message(message.chat.id, message.text)
-    SupportMessage.get(message.chat.id).sent_message = message.text
+# @messages_router.message(F.text, CustomFilters.is_repeated)
+# async def support(message: Message) -> None:
+#     await bot.send_message(message.chat.id, message.text)
+#     SupportMessage.get(message.chat.id).sent_message = message.text
