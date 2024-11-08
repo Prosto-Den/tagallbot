@@ -1,6 +1,8 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from bot import bot
+
+
 from dataclasses import dataclass
 
 
@@ -19,7 +21,6 @@ class SupportMessage:
             return SupportMessage.__chats[chat_id]
         SupportMessage.__chats[chat_id] = SupportMessage.MessageState()
         return SupportMessage.__chats[chat_id]
-
 
 class CustomFilters:
     @staticmethod

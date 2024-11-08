@@ -29,14 +29,24 @@ class Connection:
                                   (meme.id, meme.name.lower(), meme.tags))
         self.__connection.commit()
 
-    def get_meme(self, id: str) -> Meme | None:
+    # я пока не знаю, надо ли это, пока закомментил
+    # def get_meme(self, id: str) -> Meme | None:
+    #     cursor = self.__connection.cursor()
+    #     cursor.execute('SELECT * FROM memes WHERE id=?', (id,))
+    #
+    #     if not cursor.fetchone():
+    #         return None
+    #
+    #     return Meme(*cursor.fetchone())
+
+    def get_meme_by_name(self, name: str) -> Meme | None:
         cursor = self.__connection.cursor()
-        cursor.execute('SELECT * FROM memes WHERE id=?', (id,))
+        cursor.execute('SELECT * FROM memes WHERE name=?', (name,))
 
-        if not cursor.fetchone():
-            return
+        if (data := cursor.fetchone()) is None:
+            return None
 
-        return Meme(*cursor.fetchone())
+        return Meme(*data)
 
     def get_all_memes(self) -> list[Meme]:
         cursor = self.__connection.cursor()

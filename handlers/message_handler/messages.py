@@ -5,8 +5,7 @@ from aiogram import Router, F
 from getChatMembers import get_chat_members
 from aiogram.types import Message
 from typing import NoReturn
-from filters import CustomFilters, SupportMessage
-
+from filters import CustomFilters
 
 messages_router = Router()
 
