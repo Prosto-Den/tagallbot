@@ -3,7 +3,6 @@ __pycache__
 test.py
 .venv
 .idea
--1001853686912.session
--1001908362649.session
 memes.db
 server.txt
+*.session
