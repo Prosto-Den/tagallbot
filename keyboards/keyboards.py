@@ -7,8 +7,9 @@ cancel_kb = ReplyKeyboardMarkup(keyboard = [
 ], resize_keyboard = True) 
 
 # only used to make sure bot can access telegram archive and send photos
-test_kb = ReplyKeyboardMarkup(keyboard = [
+test_cancel_kb = ReplyKeyboardMarkup(keyboard = [
     [
-        KeyboardButton(text = '/test')
+        KeyboardButton(text = '/test'),
+        KeyboardButton(text = '/cancel')
     ]
 ], resize_keyboard = True)

@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove
-from keyboards import ikb_confirm, cancel_kb, test_kb
+from keyboards import ikb_confirm, cancel_kb, test_cancel_kb
 from bot import bot, conn
 from aiogram import Router, F
 from settings import add_hashtags
@@ -34,7 +34,7 @@ async def set_channel(message: Message, state: FSMContext) -> None:
     chat_id = message.forward_from_chat.id
     if bot.get_chat(chat_id):
         await message.reply('Okей, ты добавил меня в канал, но будь уверен что ты дал мне админские права'
-                            ' (уверяю, мне можно доверить роль админа в твоём ламповом телеграм канале с мемами)', reply_markup=test_kb)
+                            ' (уверяю, мне можно доверить роль админа в твоём ламповом телеграм канале с мемами)', reply_markup=test_cancel_kb)
         await state.set_state(AddArchive.admin)
         ARCHIVE_CHATS.add(chat_id)
         await state.update_data(chat_id=chat_id)
@@ -45,16 +45,12 @@ async def set_channel(message: Message, state: FSMContext) -> None:
 
 @add_archive_router.message(AddArchive.ensure, Command(commands=['test']))
 async def test_admin(message: Message, state: FSMContext) -> None:
-    chat_id = await state.get_data()['chat_id']
-    if message.from_user.id in bot.get_chat_administrators(chat_id):
-        await message.reply('Ура, ты админ в канале, можно добавлять мемы в архив', reply_markup=[cancel_kb, test_kb])
-        messages = await bot.get_chat_history(chat_id, limit=1000)
-        max_attempts = 10
-        for _ in range(max_attempts):
-            random_msg = random.choice(messages)
-            if random_msg.photo:
-                random_photo = random.choice(random_msg.photo)
-                await bot.send_photo(message.chat.id, random_photo.file_id)
-                return
-    else:
-        await message.reply('Нету тебя в администрации этого канала, попробуй снова', reply_markup=[cancel_kb, test_kb])
+    chat_id = (await state.get_data())['chat_id']
+    messages = await bot.get_chat_history(chat_id, limit=1000)
+    max_attempts = 10
+    for _ in range(max_attempts):
+        random_msg = random.choice(messages)
+        if random_msg.photo:
+            random_photo = random.choice(random_msg.photo)
+            await bot.send_photo(message.chat.id, random_photo.file_id, reply_markup=test_cancel_kb)
+    
