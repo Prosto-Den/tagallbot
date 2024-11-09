@@ -45,7 +45,7 @@ async def set_channel(message: Message, state: FSMContext) -> None:
 
 @add_archive_router.message(AddArchive.ensure, Command(commands=['test']))
 async def test_admin(message: Message, state: FSMContext) -> None:
-    chat_id = state.get_data()['chat_id']
+    chat_id = await state.get_data()['chat_id']
     if message.from_user.id in bot.get_chat_administrators(chat_id):
         await message.reply('Ура, ты админ в канале, можно добавлять мемы в архив', reply_markup=[cancel_kb, test_kb])
         messages = await bot.get_chat_history(chat_id, limit=1000)
