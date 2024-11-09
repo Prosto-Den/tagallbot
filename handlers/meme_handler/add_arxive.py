@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove
-from keyboards import ikb_confirm, cancel_kb
+from keyboards import ikb_confirm, cancel_kb, test_kb
 from bot import bot, conn
 from aiogram import Router, F
 from settings import add_hashtags
