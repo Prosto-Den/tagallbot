@@ -1,7 +1,7 @@
 import sqlite3 as sq
 from typing import Self
 from .model import Meme
-
+from random import randint
 
 class Connection:
     __instance: Self = None
@@ -82,7 +82,7 @@ class Connection:
         if count == 0:
             return None, None, None
 
-        random_index = random.randint(0, count - 1)
+        random_index = randint(0, count - 1)
         cursor.execute(f"SELECT * FROM arxive LIMIT 1 OFFSET {random_index}")
         return cursor.fetchone()
 
