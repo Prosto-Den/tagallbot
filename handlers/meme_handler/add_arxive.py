@@ -34,7 +34,8 @@ async def set_channel(message: Message, state: FSMContext) -> None:
     chat_id = message.forward_from_chat.id
     if bot.get_chat(chat_id):
         await message.reply('Okей, ты добавил меня в канал, но будь уверен что ты дал мне админские права'
-                            ' (уверяю, мне можно доверить роль админа в твоём ламповом телеграм канале с мемами)', reply_markup=test_cancel_kb)
+                            ' (уверяю, мне можно доверить роль админа в твоём ламповом телеграм канале с мемами)\n\n'
+                            'P.S. я смогу отправлять только новые сообщения из твоего архива', reply_markup=test_cancel_kb)
         await state.set_state(AddArchive.admin)
         ARCHIVE_CHATS.add(chat_id)
         await state.update_data(chat_id=chat_id)
