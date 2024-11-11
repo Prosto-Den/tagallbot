@@ -60,8 +60,8 @@ async def get_meme(message: Message) -> None:
             await message.reply('Неправильно команду используешь')
 
 @get_meme_router.message(Command(commands = 'random'))
-def get_random_meme(chat_id: int):
-    message = await bot.get_random_meme()
+async def get_random_meme(chat_id: int):
+    message = (await bot.get_random_meme())
     # if not message:
     #     return
     # if not message.photo:
