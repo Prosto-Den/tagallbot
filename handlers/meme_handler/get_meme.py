@@ -10,7 +10,7 @@ get_meme_router = Router()
 
 
 @get_meme_router.message(Command(commands = 'meme'))
-async def get_random_meme(message: Message) -> None:
+async def get_meme(message: Message) -> None:
     chat_id: int = message.chat.id
 
     command: list[str] = message.text.split(' ')
@@ -58,3 +58,14 @@ async def get_random_meme(message: Message) -> None:
 
         case _:
             await message.reply('Неправильно команду используешь')
+
+@get_meme_router.message(Command(commands = 'random'))
+def get_random_meme(chat_id: int):
+    message = bot.get_random_meme()
+    # if not message:
+    #     return
+    # if not message.photo:
+    #     conn.delete_from_arxive(message.chat.id, message.message_id)
+    #     return
+    bot.send_photo(chat_id, message)
+    

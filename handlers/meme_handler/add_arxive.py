@@ -10,8 +10,6 @@ from settings import add_hashtags
 from database import Meme
 from filters import CustomFilters
 
-# not sure if this is a good idea to place this var here
-ARCHIVE_CHATS: set[int] = set()
 
 class AddArchive(StatesGroup):
     channel = State()
@@ -35,23 +33,16 @@ async def set_channel(message: Message, state: FSMContext) -> None:
     if bot.get_chat(chat_id):
         await message.reply('Okей, ты добавил меня в канал, но будь уверен что ты дал мне админские права'
                             ' (уверяю, мне можно доверить роль админа в твоём ламповом телеграм канале с мемами)\n\n'
-                            'P.S. я смогу отправлять только новые сообщения из твоего архива', reply_markup=test_cancel_kb)
+                            'P.S. я смогу отправлять только новые сообщения из твоего архива')
         await state.set_state(AddArchive.admin)
-        ARCHIVE_CHATS.add(chat_id)
-        await state.update_data(chat_id=chat_id)
-        await state.set_state(AddArchive.ensure)
+        bot.push_archive(message)
+        # await state.update_data(chat_id=chat_id)
+        await state.clear()
     else:
         await message.reply('йо, меня вообще нет в этом канале, давай ка по новой', reply_markup=cancel_kb)
 
 
-@add_archive_router.message(AddArchive.ensure, Command(commands=['test']))
-async def test_admin(message: Message, state: FSMContext) -> None:
-    chat_id = (await state.get_data())['chat_id']
-    messages = await bot.get_chat_history(chat_id, limit=1000)
-    max_attempts = 10
-    for _ in range(max_attempts):
-        random_msg = random.choice(messages)
-        if random_msg.photo:
-            random_photo = random.choice(random_msg.photo)
-            await bot.send_photo(message.chat.id, random_photo.file_id, reply_markup=test_cancel_kb)
-    
+@add_archive_router.message(F.photo)
+async def add_archive_photo(message: Message, state: FSMContext) -> None:
+    print("add_archive_photo", message.message_id, message.chat.id)
+    bot.add_meme(message)
