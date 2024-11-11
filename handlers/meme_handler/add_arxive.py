@@ -32,7 +32,7 @@ async def set_channel(message: Message, state: FSMContext) -> None:
     if not message.photo:
         await message.reply('Фотку скинь', reply_markup=cancel_kb)
     chat_id = message.forward_from_chat.id
-    if bot.get_chat(chat_id):
+    if (await bot.get_chat(chat_id)):
         await message.reply('Okей, ты добавил меня в канал, но будь уверен что ты дал мне админские права'
                             ' (уверяю, мне можно доверить роль админа в твоём ламповом телеграм канале с мемами)\n\n'
                             'P.S. я смогу отправлять только новые сообщения из твоего архива')
