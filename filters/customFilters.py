@@ -39,7 +39,7 @@ class CustomFilters:
         return current_state is not None
 
     @staticmethod
-    async def is_repeated(message: Message) -> bool:
+    def is_repeated(message: Message) -> bool:
         messages = SupportMessage.get(message.chat.id)
         if (messages.repeated_message == message.text and 
             messages.sent_message != message.text and
@@ -48,3 +48,7 @@ class CustomFilters:
         messages.repeated_message = message.text
         messages.user_id = message.from_user.id
         return False
+
+    @staticmethod
+    async def is_archive(message: Message) -> bool:
+        return message.chat.id in bot.arxive_chats
