@@ -44,7 +44,7 @@ async def set_channel(message: Message, state: FSMContext) -> None:
         await message.reply('йо, меня вообще нет в этом канале, давай ка по новой', reply_markup=cancel_kb)
 
 
-@add_archive_router.message(F.photo, CustomFilters.is_archive)
+@add_archive_router.channel_post(F.photo, CustomFilters.is_archive)
 async def add_archive_photo(message: Message, state: FSMContext) -> None:
     print("add_archive_photo", message.message_id, message.chat.id)
     bot.add_meme(message)

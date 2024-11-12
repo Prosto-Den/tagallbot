@@ -83,7 +83,7 @@ class Connection:
             return None, None, None
 
         random_index = randint(0, count - 1)
-        cursor.execute(f"SELECT * FROM arxive LIMIT 1 OFFSET {random_index}")
+        cursor.execute(f"SELECT chat_id, message_id, photo_id FROM arxive LIMIT 1 OFFSET {random_index}")
         return cursor.fetchone()
 
     def delete_from_arxive(self, chat_id: int, message_id: str) -> None:
