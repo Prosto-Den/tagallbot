@@ -51,4 +51,5 @@ class CustomFilters:
 
     @staticmethod
     async def is_archive(message: Message) -> bool:
+        print("custom filter: is_archive,", message.chat.id, bot.arxive_chats)
         return message.chat.id in bot.arxive_chats

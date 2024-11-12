@@ -24,8 +24,8 @@ class ProstoBot(Bot):
     async def get_random_meme(self) -> str:
         chat_id, message_id, photo_id = self.__conn.get_random_meme()
         try:
-            # message = await self.copy_message(chat_id, message_id)
-            return photo_id
+            message = await self.copy_message(chat_id, message_id)
+            return message
         except Exception as e:
             self.__conn.delete_from_arxive(chat_id, message_id)
             return None
