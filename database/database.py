@@ -89,5 +89,5 @@ class Connection:
     def delete_from_arxive(self, chat_id: int, message_id: int) -> None:
         cursor = self.__connection.cursor()
         
-        cursor.execute("DELETE FROM arxive WHERE chat_id = ? AND memessage_id = ?", (chat_id, message_id))
+        cursor.execute("DELETE FROM arxive WHERE chat_id = ? AND message_id = ?", (chat_id, message_id))
         self.__connection.commit()

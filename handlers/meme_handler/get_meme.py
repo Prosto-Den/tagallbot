@@ -61,11 +61,11 @@ async def get_meme(message: Message) -> None:
 
 @get_meme_router.message(Command(commands = 'random'))
 async def get_random_meme(chat_id: int):
-    message = (await bot.get_random_meme())
-    if not message:
-        return
-    if not message.photo:
-        conn.delete_from_arxive(message.chat.id, message.message_id)
-        return
-    await bot.send_photo(chat_id, message.photo[-1].file_id)
-    
+    # message = (await bot.get_random_meme())
+    from_chat_id, message_id, photo_id = bot.__conn.get_random_meme()
+    try:
+        message = await bot.copy_message(chat_id, from_chat_id, message_id)
+        return message
+    except Exception as e:
+        bot.__conn.delete_from_arxive(chat_id, message_id)
+        return None    
