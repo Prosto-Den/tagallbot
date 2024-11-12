@@ -60,12 +60,12 @@ async def get_meme(message: Message) -> None:
             await message.reply('Неправильно команду используешь')
 
 @get_meme_router.message(Command(commands = 'random'))
-async def get_random_meme(chat_id: int):
+async def get_random_meme(message: Message):
     # message = (await bot.get_random_meme())
     from_chat_id, message_id, photo_id = conn.get_random_meme()
     try:
-        message = await bot.copy_message(chat_id, from_chat_id, message_id)
+        message = await bot.copy_message(message.chat.id, from_chat_id, message_id)
         return message
     except Exception as e:
-        conn.delete_from_arxive(chat_id, message_id)
+        conn.delete_from_arxive(from_chat_id, message_id)
         return None    

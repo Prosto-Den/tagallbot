@@ -45,6 +45,6 @@ async def set_channel(message: Message, state: FSMContext) -> None:
 
 
 @add_archive_router.channel_post(F.photo, CustomFilters.is_archive)
-async def add_archive_photo(message: Message, state: FSMContext) -> None:
+async def add_archive_photo(message: Message) -> None:
     print("add_archive_photo", message.message_id, message.chat.id)
     bot.add_meme(message)

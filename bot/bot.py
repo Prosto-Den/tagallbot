@@ -15,10 +15,10 @@ class ProstoBot(Bot):
         return self.__archive_chats
 
     def push_archive(self, message: Message) -> None:
-        self.__archive_chats.append(message.chat.id)
+        self.__archive_chats.append(message.forward_from_chat.id)
         self.__conn.add_to_arxive(message.chat.id, message.message_id, message.photo[-1].file_id)
 
-    def add_meme(self, meme: Message) -> None:
+    def add_meme(self, message: Message) -> None:
         self.__conn.add_to_arxive(message.chat.id, message.message_id, message.photo[-1].file_id)
 
     # async def get_random_meme(self) -> MessageId:
