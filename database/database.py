@@ -69,7 +69,7 @@ class Connection:
         cursor.execute('SELECT DISTINCT chat_id FROM arxive')
         return [row[0] for row in cursor.fetchall()]
 
-    def add_to_arxive(self, chat_id: int, message_id: int, photo_id: int) -> None:
+    def add_to_arxive(self, chat_id: int, message_id: int, photo_id: str) -> None:
         self.__connection.execute('INSERT INTO arxive(chat_id, message_id, photo_id) VALUES (?, ?, ?)',
                       (chat_id, message_id, photo_id))
         self.__connection.commit()

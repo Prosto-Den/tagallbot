@@ -6,3 +6,4 @@ test.py
 memes.db
 server.txt
 *.session
+.vscode
