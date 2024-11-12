@@ -24,7 +24,7 @@ class Connection:
                                   'id integer primary key AUTOINCREMENT,'
                                   'chat_id integer,'
                                   'message_id integer,'
-                                  'photo_id integer)')
+                                  'photo_id text)')
 
     def __del__(self):
         self.__connection.close()
@@ -74,7 +74,7 @@ class Connection:
                       (chat_id, message_id, photo_id))
         self.__connection.commit()
 
-    def get_random_meme(self) -> tuple[int, int, int]:
+    def get_random_meme(self) -> tuple[int, int, str]:
         cursor = self.__connection.cursor()
         cursor.execute(f"SELECT COUNT(*) FROM arxive")
         count = cursor.fetchone()[0]
@@ -86,7 +86,7 @@ class Connection:
         cursor.execute(f"SELECT chat_id, message_id, photo_id FROM arxive LIMIT 1 OFFSET {random_index}")
         return cursor.fetchone()
 
-    def delete_from_arxive(self, chat_id: int, message_id: str) -> None:
+    def delete_from_arxive(self, chat_id: int, message_id: int) -> None:
         cursor = self.__connection.cursor()
         
         cursor.execute("DELETE FROM arxive WHERE chat_id = ? AND memessage_id = ?", (chat_id, message_id))

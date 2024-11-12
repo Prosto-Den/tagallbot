@@ -21,7 +21,7 @@ class ProstoBot(Bot):
     def add_meme(self, meme: Message) -> None:
         self.__conn.add_to_arxive(message.chat.id, message.message_id, message.photo[-1].file_id)
 
-    async def get_random_meme(self) -> int:
+    async def get_random_meme(self) -> str:
         chat_id, message_id, photo_id = self.__conn.get_random_meme()
         try:
             # message = await self.copy_message(chat_id, message_id)
