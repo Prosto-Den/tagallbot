@@ -81,3 +81,7 @@ async def mention(message: Message) -> None:
 async def support(message: Message) -> None:
     await bot.send_message(message.chat.id, message.text)
     SupportMessage.get(message.chat.id).sent_message = message.text
+
+@messages_router.message(F.text.lower() == "ок")
+async def KOK(message: Message) -> None:
+    await message.answer("Кок")
