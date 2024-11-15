@@ -7,3 +7,4 @@ memes.db
 server.txt
 *.session
 .vscode
+.mypy_cache
