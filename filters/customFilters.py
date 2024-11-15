@@ -39,7 +39,7 @@ class CustomFilters:
         return current_state is not None
 
     @staticmethod
-    def is_repeated(message: Message) -> bool:
+    async def is_repeated(message: Message) -> bool:
         messages = SupportMessage.get(message.chat.id)
         if (messages.repeated_message == message.text and 
             messages.sent_message != message.text and
