@@ -3,6 +3,7 @@ from typing import Self
 from .model import Meme
 from random import randint
 
+
 class Connection:
     __instance: Self = None
 

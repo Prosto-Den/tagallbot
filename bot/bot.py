@@ -3,11 +3,14 @@ from settings import TOKEN
 from database import Connection
 from aiogram.types import Message
 
+
 # i suggest custom class is a good way to structure and incapsulate program logic
 class ProstoBot(Bot):
     def __init__(self, token: str):
         super().__init__(token=token)
-        self.__conn: Connection = Connection() # anyway this is a singleton so no difference whether it is created inplace or passed to constructor
+        self.__conn: Connection = Connection()  # anyway this is a singleton so no difference whether it is created
+                                                # inplace or passed
+                                                # to constructor
         self.__archive_chats: list[int] = conn.get_arxive_chats()
 
     @property
@@ -29,6 +32,7 @@ class ProstoBot(Bot):
     #     except Exception as e:
     #         self.__conn.delete_from_arxive(chat_id, message_id)
     #         return None
+
 
 conn = Connection()
 bot = ProstoBot(TOKEN)

@@ -3,9 +3,9 @@ from aiogram.filters import Command
 from settings import COMMANDS, MAX_MESSAGES_PER_MINUTE, MESSAGE_SYMBOLS_LIMIT
 from aiogram import Router, F
 from getChatMembers import get_chat_members
-from aiogram.types import Message
+from aiogram.types import Message, ReactionTypeEmoji
 from typing import NoReturn
-from filters import CustomFilters
+from filters import CustomFilters, SupportMessage
 
 messages_router = Router()
 
@@ -73,15 +73,36 @@ async def tag_all(message: Message) -> None:
     await message.reply(text)
 
 
+@messages_router.message(Command(commands = ['react']), CustomFilters.has_reply_message)
+async def set_reaction(message:Message) -> None:
+    emoji: str = message.text.split(' ')[1]
+
+    reaction = ReactionTypeEmoji(emoji = emoji)
+
+    await message.reply_to_message.react([reaction])
+
+
 @messages_router.message(F.text, CustomFilters.is_mentioned)
 async def mention(message: Message) -> None:
     await tag_all(message)
+
 
 @messages_router.message(F.text, CustomFilters.is_repeated)
 async def support(message: Message) -> None:
     await bot.send_message(message.chat.id, message.text)
     SupportMessage.get(message.chat.id).sent_message = message.text
 
-@messages_router.message(F.text.lower() == "ок")
+
+@messages_router.message(F.text, CustomFilters.is_prekl)
 async def KOK(message: Message) -> None:
-    await message.answer("Кок")
+    chat_id: int = message.chat.id
+
+    match message.text.lower():
+        case 'да':
+            await bot.send_message(chat_id, 'манда')
+
+        case 'нет':
+            await bot.send_message(chat_id, 'минет')
+
+        case 'ок':
+            await bot.send_message(chat_id, 'кок')
