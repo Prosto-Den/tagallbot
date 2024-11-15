@@ -56,7 +56,6 @@ class CustomFilters:
     async def has_reply_message(message: Message) -> bool:
         return message.reply_to_message is not None
 
-
     @staticmethod
     async def is_archive(message: Message) -> bool:
         print("custom filter: is_archive,", message.chat.id, bot.arxive_chats)

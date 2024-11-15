@@ -4,11 +4,10 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 from keyboards import ikb_confirm, cancel_kb
-from bot import bot, conn
+from bot import bot
 from aiogram import Router, F
 from settings import add_hashtags
 from database import Meme
-from filters import CustomFilters
 
 
 # машина состояний
@@ -51,7 +50,7 @@ async def save_picture(message: Message, state: FSMContext) -> None:
 
     photo_id: str = message.photo[0].file_id
 
-    if conn.is_photo_in_db(photo_id):
+    if bot.get_conn().is_photo_in_db(photo_id):
         await message.reply('Мем с таким фото уже добавлен в базу')
 
         return
@@ -118,7 +117,7 @@ async def save_meme(call: CallbackQuery, state: FSMContext) -> None:
 
     match call.data.replace('con_', ''):
         case 'yes':
-            conn.add_meme(meme)
+            bot.get_conn().add_meme(meme)
             await call.message.delete()
             await bot.send_message(user_id, 'Мем успешно сохранён :)', reply_markup = ReplyKeyboardRemove())
 

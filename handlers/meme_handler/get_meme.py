@@ -1,4 +1,4 @@
-from bot import bot, conn
+from bot import bot
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
@@ -17,7 +17,7 @@ async def get_meme(message: Message) -> None:
 
     match command:
         case (_, '-random', '-nocap'):
-            if len(memes := conn.get_all_memes()) != 0:
+            if len(memes := bot.get_conn().get_all_memes()) != 0:
                 random_meme: Meme = choice(memes)
 
                 await bot.send_photo(chat_id, random_meme.id)
@@ -25,7 +25,7 @@ async def get_meme(message: Message) -> None:
                 await bot.send_message(chat_id, 'В базе ещё нет мемов :(')
 
         case (_, '-random'):
-            if len(memes := conn.get_all_memes()) != 0:
+            if len(memes := bot.get_conn().get_all_memes()) != 0:
                 random_meme: Meme = choice(memes)
 
                 caption = 'Название: {:s}\nТеги: {:s}'.format(random_meme.name, random_meme.tags)
@@ -37,7 +37,7 @@ async def get_meme(message: Message) -> None:
         case(_, '-nocap', *words):
             name: str = ' '.join(words)
 
-            meme: Meme = conn.get_meme_by_name(name)
+            meme: Meme = bot.get_conn().get_meme_by_name(name)
 
             if meme:
                 await bot.send_photo(chat_id, meme.id)
@@ -47,7 +47,7 @@ async def get_meme(message: Message) -> None:
         case (_, *words):
             name: str = ' '.join(words)
 
-            meme: Meme = conn.get_meme_by_name(name)
+            meme: Meme = bot.get_conn().get_meme_by_name(name)
 
             if meme:
                 caption = 'Название: {:s}\nТеги: {:s}'.format(meme.name, meme.tags)
@@ -59,13 +59,15 @@ async def get_meme(message: Message) -> None:
         case _:
             await message.reply('Неправильно команду используешь')
 
+
 @get_meme_router.message(Command(commands = 'random'))
 async def get_random_meme(message: Message):
     # message = (await bot.get_random_meme())
-    from_chat_id, message_id, photo_id = conn.get_random_meme()
+    from_chat_id, message_id, photo_id = bot.get_conn().get_random_meme()
     try:
         message = await bot.copy_message(message.chat.id, from_chat_id, message_id)
         return message
+
     except Exception as e:
-        conn.delete_from_arxive(from_chat_id, message_id)
-        return None    
+        bot.get_conn().delete_from_arxive(from_chat_id, message_id)
+        return None

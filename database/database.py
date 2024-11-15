@@ -75,7 +75,7 @@ class Connection:
                       (chat_id, message_id, photo_id))
         self.__connection.commit()
 
-    def get_random_meme(self) -> tuple[int, int, str]:
+    def get_random_meme(self) -> tuple[int | None, int | None, str | None]:
         cursor = self.__connection.cursor()
         cursor.execute(f"SELECT COUNT(*) FROM arxive")
         count = cursor.fetchone()[0]

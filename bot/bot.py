@@ -11,7 +11,7 @@ class ProstoBot(Bot):
         self.__conn: Connection = Connection()  # anyway this is a singleton so no difference whether it is created
                                                 # inplace or passed
                                                 # to constructor
-        self.__archive_chats: list[int] = conn.get_arxive_chats()
+        self.__archive_chats: list[int] = self.__conn.get_arxive_chats()
 
     @property
     def arxive_chats(self) -> list[int]:
@@ -24,6 +24,9 @@ class ProstoBot(Bot):
     def add_meme(self, message: Message) -> None:
         self.__conn.add_to_arxive(message.chat.id, message.message_id, message.photo[-1].file_id)
 
+    def get_conn(self) -> Connection:
+        return self.__conn
+
     # async def get_random_meme(self) -> MessageId:
     #     chat_id, message_id, photo_id = self.__conn.get_random_meme()
     #     try:
@@ -34,6 +37,6 @@ class ProstoBot(Bot):
     #         return None
 
 
-conn = Connection()
+# conn = Connection()
 bot = ProstoBot(TOKEN)
 dp = Dispatcher()

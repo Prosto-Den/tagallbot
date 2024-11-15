@@ -6,6 +6,7 @@ from getChatMembers import get_chat_members
 from aiogram.types import Message, ReactionTypeEmoji
 from typing import NoReturn
 from filters import CustomFilters, SupportMessage
+from random import choice
 
 messages_router = Router()
 
@@ -99,7 +100,9 @@ async def KOK(message: Message) -> None:
 
     match message.text.lower():
         case 'да':
-            await bot.send_message(chat_id, 'манда')
+            text = choice(['манда', 'пизда'])
+
+            await bot.send_message(chat_id, text)
 
         case 'нет':
             await bot.send_message(chat_id, 'минет')
