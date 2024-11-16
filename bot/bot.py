@@ -12,6 +12,7 @@ class ProstoBot(Bot):
                                                 # inplace or passed
                                                 # to constructor
         self.__archive_chats: list[int] = self.__conn.get_arxive_chats()
+        self.prekl_msg: Dict[int, str] = dict()
 
     @property
     def arxive_chats(self) -> list[int]:

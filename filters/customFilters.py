@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from bot import bot
-
+import re
 
 from dataclasses import dataclass
 
@@ -62,5 +62,10 @@ class CustomFilters:
         return message.chat.id in bot.arxive_chats
 
     @staticmethod
-    async def is_prekl(message: Message) -> bool:
-        return message.text.lower() in ['да', 'нет', 'ок']
+    async def is_prekl(message: Message) -> str:
+        match = re.match(r'[\w\W]*(ок|да|нет)[., ?!]*$', message.text.lower())
+        if match:
+            bot.prekl_msg[message.chat.id] = match.group(1)
+            return True
+        bot.prekl_msg[message.chat.id] = ""
+        return False

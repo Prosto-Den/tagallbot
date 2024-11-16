@@ -97,11 +97,11 @@ async def support(message: Message) -> None:
 @messages_router.message(F.text, CustomFilters.is_prekl)
 async def KOK(message: Message) -> None:
     chat_id: int = message.chat.id
+    match_result = bot.prekl_msg.get(message.chat.id)
 
-    match message.text.lower():
+    match match_result:
         case 'да':
             text = choice(['манда', 'пизда'])
-
             await bot.send_message(chat_id, text)
 
         case 'нет':
@@ -109,3 +109,8 @@ async def KOK(message: Message) -> None:
 
         case 'ок':
             await bot.send_message(chat_id, 'кок')
+        
+        # just in case
+        case _:
+            await bot.send_message(chat_id, f'э бля а как ответить на это говно: {match_result}')
+            raise ValueError(f"Invalid match result: {match_result} in message: {message.text}")
