@@ -16,7 +16,7 @@ class SupportMessage:
     __chats: dict[int, MessageState] = {}
 
     @classmethod
-    def get(chat_id: int) -> MessageState:
+    def get(cls, chat_id: int) -> MessageState:
         if SupportMessage.__chats.get(chat_id):
             return SupportMessage.__chats[chat_id]
         SupportMessage.__chats[chat_id] = SupportMessage.MessageState()

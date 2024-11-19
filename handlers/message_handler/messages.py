@@ -8,6 +8,7 @@ from typing import NoReturn
 from filters import CustomFilters, SupportMessage
 from random import choice
 from sys import getsizeof
+from settings import AVAILABLE_REACTIONS
 
 messages_router = Router()
 
@@ -87,9 +88,13 @@ async def tag_all(message: Message) -> None:
 async def set_reaction(message:Message) -> None:
     emoji: str = message.text.split(' ')[1]
 
-    reaction = ReactionTypeEmoji(emoji = emoji)
+    if emoji in AVAILABLE_REACTIONS:
+        reaction = ReactionTypeEmoji(emoji = emoji)
 
-    await message.reply_to_message.react([reaction])
+        await message.reply_to_message.react([reaction])
+
+    else:
+        await message.reply('Нормально команду используй')
 
 
 @messages_router.message(F.text, CustomFilters.is_mentioned)
