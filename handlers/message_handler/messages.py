@@ -38,7 +38,7 @@ async def spam(message: Message) -> None:
         case [_, amount, *word]:
             try:
                 number = int(amount)
-                if number > 1000000:
+                if number > 1_000_000:
                     await message.reply('В штангу дал?')
                     return
                 check_values(number, word)
