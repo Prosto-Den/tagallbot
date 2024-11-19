@@ -15,4 +15,5 @@ class Memory:
     def max_ram(self):
         return self.__ram
 
+
 memory = Memory()
