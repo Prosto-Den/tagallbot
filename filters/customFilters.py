@@ -62,10 +62,12 @@ class CustomFilters:
         return message.chat.id in bot.arxive_chats
 
     @staticmethod
-    async def is_prekl(message: Message) -> str:
+    async def is_prekl(message: Message) -> bool:
         match = re.match(r'[\w\W]*(ок|да|нет)[., ?!]*$', message.text.lower())
+
         if match:
             bot.prekl_msg[message.chat.id] = match.group(1)
             return True
+
         bot.prekl_msg[message.chat.id] = ""
         return False
