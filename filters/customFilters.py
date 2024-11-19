@@ -63,7 +63,7 @@ class CustomFilters:
 
     @staticmethod
     async def is_prekl(message: Message) -> bool:
-        match = re.match(r'[\w\W]*(ок|да|нет)[., ?!]*$', message.text.lower())
+        match = re.match(r'\b(ок|да|нет)[., ?!]*$', message.text.lower())
 
         if match:
             bot.prekl_msg[message.chat.id] = match.group(1)
