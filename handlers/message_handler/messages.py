@@ -1,4 +1,4 @@
-from bot import bot
+from bot import bot, memory
 from aiogram.filters import Command
 from settings import COMMANDS, MAX_MESSAGES_PER_MINUTE, MESSAGE_SYMBOLS_LIMIT
 from aiogram import Router, F
@@ -7,6 +7,7 @@ from aiogram.types import Message, ReactionTypeEmoji
 from typing import NoReturn
 from filters import CustomFilters, SupportMessage
 from random import choice
+from sys import getsizeof
 
 messages_router = Router()
 
@@ -37,10 +38,18 @@ async def spam(message: Message) -> None:
         case [_, amount, *word]:
             try:
                 number = int(amount)
+                if number > 1_000_000:
+                    await message.reply('В штангу дал?')
+                    return
                 check_values(number, word)
 
-                text: str = (' '.join(word) + enter) * number
-
+                repeat_string = ' '.join(word) + enter
+                # dont ask
+                if  (getsizeof(repeat_string) - getsizeof(repeat_string[0]) + 1) * number + getsizeof(repeat_string[0]) >= memory.max_ram:
+                    await message.reply('забыл...')
+                    return
+                
+                text: str = repeat_string * number
                 while text:
                     if len(text) > (index := MESSAGE_SYMBOLS_LIMIT) and text[index] not in (' ', '\n'):
                         for i in range(index, 0, -1):
