@@ -71,3 +71,10 @@ class CustomFilters:
 
         bot.prekl_msg[message.chat.id] = ""
         return False
+
+    @staticmethod
+    async def is_question(message: Message):
+        if re.search(r"(почему|как)", message.text.lower):
+            return False
+        if re.search(r"\?$", message.text.lower):
+            return True
