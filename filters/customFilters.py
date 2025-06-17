@@ -73,8 +73,14 @@ class CustomFilters:
         return False
 
     @staticmethod
-    async def is_question(message: Message):
-        if re.search(r"(почему|как)", message.text.lower):
+    async def is_yes_no_question(message: Message):
+        last_sentence = re.search(r'([\w~ ,]+?)\?$', message.text.lower())
+        if last_sentence:
+            last_sentence = last_sentence.group(1)
+        else:
             return False
-        if re.search(r"\?$", message.text.lower):
-            return True
+
+        if re.search(r'(почему|как|откуда|куда|зачем|где|сколько|кто|что|когда|какой)', last_sentence):
+            return False
+        return True
+        

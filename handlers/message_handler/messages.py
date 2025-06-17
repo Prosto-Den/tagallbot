@@ -131,8 +131,8 @@ async def KOK(message: Message) -> None:
             raise ValueError(f"Invalid match result: {match_result} in message: {message.text}")
 
 
-@messages_router.message(F.text, CustomFilters.is_question)
+@messages_router.message(F.text, CustomFilters.is_yes_no_question)
 async def SOSAL(message: Message):
     chat_id = message.chat.id
-    await asleep(5)
+    await asleep(1)
     await bot.send_message(chat_id, "Сосал?")
