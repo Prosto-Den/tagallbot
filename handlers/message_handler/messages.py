@@ -9,6 +9,7 @@ from filters import CustomFilters, SupportMessage
 from random import choice
 from sys import getsizeof
 from settings import AVAILABLE_REACTIONS
+from asyncio import sleep as asleep
 
 messages_router = Router()
 
@@ -128,3 +129,10 @@ async def KOK(message: Message) -> None:
         case _:
             await bot.send_message(chat_id, f'э бля а как ответить на это говно: {match_result}')
             raise ValueError(f"Invalid match result: {match_result} in message: {message.text}")
+
+
+@messages_router.message(F.text, CustomFilters.is_yes_no_question)
+async def SOSAL(message: Message):
+    chat_id = message.chat.id
+    await asleep(1)
+    await bot.send_message(chat_id, "Сосал?")
