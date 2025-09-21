@@ -1,43 +1,17 @@
 from aiogram import Bot, Dispatcher
-from settings import TOKEN
-from database import Connection
-from aiogram.types import Message
+from settings import Settings
+from utils.singleton import Singleton
 
 
 # i suggest custom class is a good way to structure and incapsulate program logic
-class ProstoBot(Bot):
+#TODO проверить, что singleton ничего не сломал
+class ProstoBot(Bot, metaclass=Singleton):
+    """
+    Класс бота
+    """
     def __init__(self, token: str):
         super().__init__(token=token)
-        self.__conn: Connection = Connection()  # anyway this is a singleton so no difference whether it is created
-                                                # inplace or passed
-                                                # to constructor
-        self.__archive_chats: list[int] = self.__conn.get_arxive_chats()
-        self.prekl_msg: Dict[int, str] = dict()
+        self.prekl_msg: dict[int, str] = dict()
 
-    @property
-    def arxive_chats(self) -> list[int]:
-        return self.__archive_chats
-
-    def push_archive(self, message: Message) -> None:
-        self.__archive_chats.append(message.forward_from_chat.id)
-        self.__conn.add_to_arxive(message.chat.id, message.message_id, message.photo[-1].file_id)
-
-    def add_meme(self, message: Message) -> None:
-        self.__conn.add_to_arxive(message.chat.id, message.message_id, message.photo[-1].file_id)
-
-    def get_conn(self) -> Connection:
-        return self.__conn
-
-    # async def get_random_meme(self) -> MessageId:
-    #     chat_id, message_id, photo_id = self.__conn.get_random_meme()
-    #     try:
-    #         message = await self.copy_message(chat_id, message_id)
-    #         return message
-    #     except Exception as e:
-    #         self.__conn.delete_from_arxive(chat_id, message_id)
-    #         return None
-
-
-# conn = Connection()
-bot = ProstoBot(TOKEN)
+bot = ProstoBot(Settings.get_bot_config().TOKEN)
 dp = Dispatcher()

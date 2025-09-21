@@ -26,16 +26,30 @@ class SupportMessage:
 class CustomFilters:
     @staticmethod
     async def is_mentioned(message: Message) -> bool:
+        """
+        Был ли бот упомянут в сообщении
+        :param message: Сообщение
+        :return: True - "пинг" бота был найден в сообщении, иначе False
+        """
         data = await bot.me()
-
         return f'@{data.username}' in message.text
 
     @staticmethod
     def is_private_chat(message: Message) -> bool:
+        """
+        Является ли этот чат личным
+        :param message: Сообщение
+        :return: True - чат личный, иначе False
+        """
         return message.chat.type == 'private'
 
     @staticmethod
     async def is_any_state(_, state: FSMContext) -> bool:
+        """
+        Находится ли машина состояний в хоть каком-то состоянии
+        :param state: Состояние машины
+        :return: True - если состояние не None, иначе False
+        """
         current_state = await state.get_state()
         return current_state is not None
 
@@ -54,12 +68,12 @@ class CustomFilters:
 
     @staticmethod
     async def has_reply_message(message: Message) -> bool:
+        """
+        Является ли сообщение ответом на другое сообщение
+        :param message: Сообщение
+        :return: True - сообщение отвечает на какое-то сообщение, иначе False
+        """
         return message.reply_to_message is not None
-
-    @staticmethod
-    async def is_archive(message: Message) -> bool:
-        print("custom filter: is_archive,", message.chat.id, bot.arxive_chats)
-        return message.chat.id in bot.arxive_chats
 
     @staticmethod
     async def is_prekl(message: Message) -> bool:

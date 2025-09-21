@@ -1,23 +1,27 @@
-import json
+from utils.path_helper import PathHelper
+from utils.json_reader import JsonReader
+from models.pydantic_models.settings_model import SettingsModel
+from models.pydantic_models.bot_config_model import BotConfigModel
 from typing import Final
 
-with open('./settings/settings.json') as file:
-    data = dict(json.load(file))
 
-    API_ID: str = data['API_ID']
-    API_HASH: str = data['API_HASH']
-    TOKEN: str = data['TOKEN']
+class Settings:
+    __SETTINGS_FILENAME: Final[str] = 'settings.json'
+    __BOT_CONFIG_FILENAME: Final[str] = 'bot_config.json'
+    __bot_config: BotConfigModel = None
+    __settings: SettingsModel = None
 
-with open('./settings/commands.json', encoding='utf-8') as file:
-    COMMANDS: dict[str, str] = dict(json.load(file))
 
-"""Do not change these values!!!"""
-MESSAGE_SYMBOLS_LIMIT: Final[int] = 2048
-MAX_MESSAGES_PER_MINUTE: Final[int] = 15
+    @classmethod
+    def get_settings(cls) -> SettingsModel:
+        if cls.__settings is None:
+            path = PathHelper.join(PathHelper.get_settings_folder(), cls.__SETTINGS_FILENAME)
+            cls.__settings = JsonReader.read_as_model(path, SettingsModel)
+        return cls.__settings
 
-AVAILABLE_REACTIONS: Final[tuple] = ("👍", "👎", "❤", "🔥", "🥰", "👏", "😁", "🤔", "🤯", "😱", "🤬", "😢", "🎉", "🤩",
-                                     "🤮", "💩", "🙏", "👌", "🕊", "🤡", "🥱", "🥴", "😍", "🐳", "❤‍🔥", "🌚", "🌭",
-                                     "💯", "🤣", "⚡", "🍌", "🏆", "💔", "🤨", "😐", "🍓", "🍾", "💋", "🖕", "😈",
-                                     "😴", "😭", "🤓", "👻", "👨‍💻", "👀", "🎃", "🙈", "😇", "😨", "🤝", "✍", "🤗",
-                                     "🫡", "🎅", "🎄", "☃", "💅", "🤪", "🗿", "🆒", "💘", "🙉", "🦄", "😘", "💊",
-                                     "🙊", "😎", "👾", "🤷‍♂", "🤷", "🤷‍♀", "😡")
+    @classmethod
+    def get_bot_config(cls) -> BotConfigModel:
+        if cls.__bot_config is None:
+            path = PathHelper.join(PathHelper.get_settings_folder(), cls.__BOT_CONFIG_FILENAME)
+            cls.__bot_config = JsonReader.read_as_model(path, BotConfigModel)
+        return cls.__bot_config
