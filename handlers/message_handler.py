@@ -20,7 +20,6 @@ async def help(message: Message) -> None:
     :param message: Сообщение в телеграмме
     """
     text = '\n'.join([f'{key} - {value}' for key, value in Settings.get_settings().AVAILABLE_COMMANDS.items()])
-
     await message.reply(text)
 
 

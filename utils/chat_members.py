@@ -37,10 +37,11 @@ class ChatMembers:
         session_folder = PathHelper.get_session_folder()
         FileManipulator.create_folder(session_folder)
 
-        API_ID: Final[str] = Settings.get_bot_config().API_ID
+        API_ID: Final[int] = Settings.get_bot_config().API_ID
         API_HASH: Final[str] = Settings.get_bot_config().API_HASH
+        TOKEN: Final[str] = Settings.get_bot_config().TOKEN
 
-        async with Client(str(chat_id), API_ID, API_HASH, workdir=session_folder) as app:
+        async with Client(str(chat_id), API_ID, API_HASH, workdir=session_folder, bot_token=TOKEN) as app:
             member: ChatMember
             async for member in app.get_chat_members(chat_id):
                 if member.user and not member.user.is_bot:
