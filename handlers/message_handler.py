@@ -2,7 +2,7 @@ from bot import bot, memory
 from aiogram.filters import Command
 from settings import Settings
 from aiogram import Router, F
-from utils.chat_members import ChatMembers
+from utils.chat_utils import ChatUtils
 from aiogram.types import Message, ReactionTypeEmoji
 from typing import NoReturn, Sequence
 from filters import CustomFilters, SupportMessage
@@ -34,7 +34,7 @@ async def spam(message: Message) -> None:
         Функция для проверки валидности значений
         :param number: Кол-во сообщений. Должно быть больше 0
         :param words: Последовательность слов для повтора. Длина последовательности должна быть больше 0
-        :return: Ничего, если всё нормально, поднимает исключение, если кринжанул
+        :return: Ничего, если всё нормально, поднимает исключение, если что-то не так
         """
         if number < 0:
             raise ValueError
@@ -47,7 +47,6 @@ async def spam(message: Message) -> None:
     message_text: list[str] = message.text.replace('\n', ' ').split(' ')
     message_counter: int = 0
 
-    #TODO не знаю, норм так или по-другому парсить
     match message_text:
         case [_, amount, *word]:
             try:
@@ -75,7 +74,6 @@ async def spam(message: Message) -> None:
 
                     await bot.send_message(chat_id, text[:index])
                     text = text[index:]
-
                     message_counter += 1
                     if message_counter >= Settings.get_settings().MAX_MESSAGE_PER_MINUTE:
                         break
@@ -97,7 +95,7 @@ async def tag_all(message: Message) -> None:
     """
     chat_id: int = message.chat.id
 
-    usernames: list = await ChatMembers.get_chat_members(chat_id)
+    usernames: list = await ChatUtils.get_chat_members(chat_id)
     text: str = ''.join(usernames)
 
     await message.reply(text)
@@ -127,8 +125,12 @@ async def mention(message: Message) -> None:
     await tag_all(message)
 
 
-#TODO я не помню, что это такое
 @messages_router.message(F.text, CustomFilters.is_repeated)
-async def support(message: Message) -> None:
+async def repeat_message(message: Message) -> None:
+    """
+    Повторяет текст сообщения, если два последних сообщения в чате имеют одинаковый текст
+    и написаны разными пользователями
+    :param message: Сообщение в телеграмме
+    """
     await bot.send_message(message.chat.id, message.text)
     SupportMessage.get(message.chat.id).sent_message = message.text

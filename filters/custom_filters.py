@@ -1,9 +1,9 @@
-from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from bot import bot
-import re
-
+from aiogram.types import Message
 from dataclasses import dataclass
+from bot import bot
+from random import randint
+import re
 
 
 class SupportMessage:
@@ -24,6 +24,9 @@ class SupportMessage:
 
 
 class CustomFilters:
+    """
+    Класс с фильтрами
+    """
     @staticmethod
     async def is_mentioned(message: Message) -> bool:
         """
@@ -37,7 +40,7 @@ class CustomFilters:
     @staticmethod
     def is_private_chat(message: Message) -> bool:
         """
-        Является ли этот чат личным
+        Является ли этот чат личным (приватным)
         :param message: Сообщение
         :return: True - чат личный, иначе False
         """
@@ -55,6 +58,12 @@ class CustomFilters:
 
     @staticmethod
     async def is_repeated(message: Message) -> bool:
+        """
+        Является ли это сообщение повторением предыдущего
+        :param message: Сообщение в телеграмме
+        :return: True - если текст сообщения одинаков с текстом предыдущего сообщения, а
+                 также написано другим пользователем, иначе False
+        """
         messages = SupportMessage.get(message.chat.id)
 
         if (messages.repeated_message == message.text and
@@ -84,4 +93,21 @@ class CustomFilters:
             return True
 
         bot.prekl_msg[message.chat.id] = ""
+        return False
+
+    @staticmethod
+    async def random(chance: int) -> True:
+        """
+        Выполнить обработку сообщения с неекоторым шансом
+        :param chance: Шанс обработки сообщения. Принимается значение от 0 до 100 (0 - сообщение обработано не будет,
+        100 - сообщение будет обработано
+        :return: True - обработать сообщение, False - не обрабатывать
+        """
+        if 0 <=chance <= 100:
+            if chance == 0:
+                return False
+            elif chance == 100:
+                return True
+            else:
+                return randint(0, 100) <= chance
         return False

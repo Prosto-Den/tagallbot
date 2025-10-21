@@ -6,7 +6,10 @@ from utils.file_manipulator import FileManipulator
 from settings.settings import Settings
 
 
-class ChatMembers:
+class ChatUtils:
+    """
+    Утилиты для работы с чатом
+    """
     @staticmethod
     def __get_peer_type_new(peer_id: int) -> Literal['user', 'channel', 'chat']:
         """
@@ -30,9 +33,10 @@ class ChatMembers:
         :param chat_id: ID чата
         :return: Список с никкеймами/ID пользователей чата
         """
-        utils.get_peer_type = cls.__get_peer_type_new
-
         result = list()
+
+        # Заменяем нерабочую функцию из библиотеки на свою
+        utils.get_peer_type = cls.__get_peer_type_new
         # размещаем все сессии в одной папке
         session_folder = PathHelper.get_session_folder()
         FileManipulator.create_folder(session_folder)
@@ -45,12 +49,8 @@ class ChatMembers:
             member: ChatMember
             async for member in app.get_chat_members(chat_id):
                 if member.user and not member.user.is_bot:
-                    if member.user.username:
-                        username: str = '@' + member.user.username + '\n'
-                        result.append(username)
-                    else:
-                        # TODO нужно протестировать, что тег по id работает
-                        username: str = '@' + str(member.user.id) + '\n'
-                        result.append(username)
-
+                    # TODO нужно протестировать, что тег по id работает
+                    nick = member.user.username if member.user.username else str(member.user.id)
+                    username = ''.join(['@', nick, '\n'])
+                    result.append(username)
         return result

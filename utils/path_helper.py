@@ -40,6 +40,9 @@ class PathHelper:
 
     @classmethod
     def get_session_folder(cls) -> str:
+        """
+        Возвращает путь к папке с созданными сессиями
+        """
         return cls.join(cls.get_root_path(), cls.__SESSION_FOLDER)
 
     @classmethod
