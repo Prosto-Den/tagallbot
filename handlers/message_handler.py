@@ -7,6 +7,8 @@ from aiogram.types import Message, ReactionTypeEmoji
 from typing import NoReturn, Sequence
 from filters import CustomFilters, SupportMessage
 from sys import getsizeof
+from random import choice
+from asyncio import sleep as asleep
 
 #TODO поместить бы это всё дело в класс...
 
@@ -104,7 +106,7 @@ async def tag_all(message: Message) -> None:
 @messages_router.message(Command(commands = ['react']), CustomFilters.has_reply_message)
 async def set_reaction(message:Message) -> None:
     """
-    Ставит реакцию на сообщение (/react <эмоджи)>
+    Ставит реакцию на сообщение (/react <эмоджи>)
     :param message: Сообщение в телеграмме
     """
     emoji: str = message.text.split(' ')[-1]
@@ -134,3 +136,38 @@ async def repeat_message(message: Message) -> None:
     """
     await bot.send_message(message.chat.id, message.text)
     SupportMessage.get(message.chat.id).sent_message = message.text
+
+@messages_router.message(F.text, CustomFilters.is_prekl)
+async def KOK(message: Message) -> None:
+    """
+    Для "приколов" в чате. На да ответит что нужно, на нет тоже.
+    :param message: Сообщение в тг
+    """
+    chat_id: int = message.chat.id
+    match_result = bot.prekl_msg.get(message.chat.id)
+
+    match match_result:
+        case 'да':
+            text = choice(['манда', 'пизда'])
+            await bot.send_message(chat_id, text)
+
+        case 'нет':
+            await bot.send_message(chat_id, 'минет')
+
+        case 'ок':
+            await bot.send_message(chat_id, 'кок')
+
+        # just in case
+        case _:
+            await bot.send_message(chat_id, f'э бля а как ответить на это говно: {match_result}')
+            raise ValueError(f"Invalid match result: {match_result} in message: {message.text}")
+
+@messages_router.message(F.text, CustomFilters.is_yes_no_question)
+async def SOSAL(message: Message) -> None:
+    """
+    Сосал?
+    :param message:  Сообщение тг
+    """
+    chat_id = message.chat.id
+    await asleep(1)
+    await bot.send_message(chat_id, "Сосал?")

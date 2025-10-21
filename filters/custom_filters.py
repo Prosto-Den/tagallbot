@@ -96,18 +96,29 @@ class CustomFilters:
         return False
 
     @staticmethod
+    async def is_yes_no_question(message: Message):
+        """
+        Содержит ли сообщение вопрос, на который можно ответить да/нет?
+        :param message: Сообщение из тг
+        :return: True - содержит, иначе False
+        """
+        # работает регулярка не всегда правильно, но большую часть определяет
+        last_sentence = re.search(r'([\w~ ,]+?)\?+$', message.text.lower())
+        if last_sentence:
+            last_sentence = last_sentence.group(1)
+        else:
+            return False
+
+        if re.search(r'(почему|как|откуда|куда|зачем|где|сколько|кто|что|когда|какой)', last_sentence):
+            return False
+        return True
+
+    @staticmethod
     async def random(chance: int) -> True:
         """
-        Выполнить обработку сообщения с неекоторым шансом
+        Выполнить обработку сообщения с некоторым шансом
         :param chance: Шанс обработки сообщения. Принимается значение от 0 до 100 (0 - сообщение обработано не будет,
         100 - сообщение будет обработано
         :return: True - обработать сообщение, False - не обрабатывать
         """
-        if 0 <=chance <= 100:
-            if chance == 0:
-                return False
-            elif chance == 100:
-                return True
-            else:
-                return randint(0, 100) <= chance
-        return False
+        return randint(0, 99) < chance
