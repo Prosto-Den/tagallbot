@@ -1,29 +1,43 @@
 from bot import bot, memory
 from aiogram.filters import Command
-from settings import COMMANDS, MAX_MESSAGES_PER_MINUTE, MESSAGE_SYMBOLS_LIMIT
+from settings import Settings
 from aiogram import Router, F
-from getChatMembers import get_chat_members
+from utils.chat_utils import ChatUtils
 from aiogram.types import Message, ReactionTypeEmoji
-from typing import NoReturn
+from typing import NoReturn, Sequence
 from filters import CustomFilters, SupportMessage
-from random import choice
 from sys import getsizeof
-from settings import AVAILABLE_REACTIONS
+from random import choice
+from asyncio import sleep as asleep
+
+#TODO поместить бы это всё дело в класс...
 
 messages_router = Router()
 
 
 @messages_router.message(Command(commands=['help']))
 async def help(message: Message) -> None:
-    text = '\n'.join([f'{key} - {value}' for key, value in COMMANDS.items()])
-
+    """
+    Выводит информацию о доступных командах (/help)
+    :param message: Сообщение в телеграмме
+    """
+    text = '\n'.join([f'{key} - {value}' for key, value in Settings.get_settings().AVAILABLE_COMMANDS.items()])
     await message.reply(text)
 
 
 @messages_router.message(Command(commands=['spam']))
 async def spam(message: Message) -> None:
-    # функция для проверки валидности значений
-    def check_values(number: int, words: list) -> NoReturn | None:
+    """
+    Функция для спама сообщениями (/spam <n> <сообщение>)
+    :param message: Сообщение в телеграмме
+    """
+    def check_values(number: int, words: Sequence[str]) -> NoReturn | None:
+        """
+        Функция для проверки валидности значений
+        :param number: Кол-во сообщений. Должно быть больше 0
+        :param words: Последовательность слов для повтора. Длина последовательности должна быть больше 0
+        :return: Ничего, если всё нормально, поднимает исключение, если что-то не так
+        """
         if number < 0:
             raise ValueError
         if len(words) < 1:
@@ -46,13 +60,15 @@ async def spam(message: Message) -> None:
 
                 repeat_string = ' '.join(word) + enter
                 # dont ask
-                if  (getsizeof(repeat_string) - getsizeof(repeat_string[0]) + 1) * number + getsizeof(repeat_string[0]) >= memory.max_ram:
+                if ((getsizeof(repeat_string) - getsizeof(repeat_string[0]) + 1) * number
+                        + getsizeof(repeat_string[0]) >= memory.max_ram):
                     await message.reply('забыл...')
                     return
                 
                 text: str = repeat_string * number
                 while text:
-                    if len(text) > (index := MESSAGE_SYMBOLS_LIMIT) and text[index] not in (' ', '\n'):
+                    if (len(text) > (index := Settings.get_settings().MESSAGE_SYMBOLS_LIMIT) and
+                            text[index] not in (' ', '\n')):
                         for i in range(index, 0, -1):
                             if text[i] in (' ', '\n'):
                                 index = i
@@ -60,9 +76,8 @@ async def spam(message: Message) -> None:
 
                     await bot.send_message(chat_id, text[:index])
                     text = text[index:]
-
                     message_counter += 1
-                    if message_counter >= MAX_MESSAGES_PER_MINUTE:
+                    if message_counter >= Settings.get_settings().MAX_MESSAGE_PER_MINUTE:
                         break
 
             except ValueError:
@@ -76,9 +91,13 @@ async def spam(message: Message) -> None:
 
 @messages_router.message(Command(commands=['all']))
 async def tag_all(message: Message) -> None:
+    """
+    Тегает всех пользователей в чате (/all)
+    :param message: Сообщение в телеграмме
+    """
     chat_id: int = message.chat.id
 
-    usernames: list = await get_chat_members(chat_id)
+    usernames: list = await ChatUtils.get_chat_members(chat_id)
     text: str = ''.join(usernames)
 
     await message.reply(text)
@@ -86,30 +105,44 @@ async def tag_all(message: Message) -> None:
 
 @messages_router.message(Command(commands = ['react']), CustomFilters.has_reply_message)
 async def set_reaction(message:Message) -> None:
-    emoji: str = message.text.split(' ')[1]
+    """
+    Ставит реакцию на сообщение (/react <эмоджи>)
+    :param message: Сообщение в телеграмме
+    """
+    emoji: str = message.text.split(' ')[-1]
 
-    if emoji in AVAILABLE_REACTIONS:
+    if emoji in Settings.get_settings().AVAILABLE_REACTIONS:
         reaction = ReactionTypeEmoji(emoji = emoji)
-
         await message.reply_to_message.react([reaction])
-
     else:
         await message.reply('Нормально команду используй')
 
 
 @messages_router.message(F.text, CustomFilters.is_mentioned)
 async def mention(message: Message) -> None:
+    """
+    Тегает всех пользователей чата при упоминании бота (@prostoTagAllBot)
+    :param message: Сообщение в телеграмме
+    """
     await tag_all(message)
 
 
 @messages_router.message(F.text, CustomFilters.is_repeated)
-async def support(message: Message) -> None:
+async def repeat_message(message: Message) -> None:
+    """
+    Повторяет текст сообщения, если два последних сообщения в чате имеют одинаковый текст
+    и написаны разными пользователями
+    :param message: Сообщение в телеграмме
+    """
     await bot.send_message(message.chat.id, message.text)
     SupportMessage.get(message.chat.id).sent_message = message.text
 
-
 @messages_router.message(F.text, CustomFilters.is_prekl)
 async def KOK(message: Message) -> None:
+    """
+    Для "приколов" в чате. На да ответит что нужно, на нет тоже.
+    :param message: Сообщение в тг
+    """
     chat_id: int = message.chat.id
     match_result = bot.prekl_msg.get(message.chat.id)
 
@@ -123,8 +156,18 @@ async def KOK(message: Message) -> None:
 
         case 'ок':
             await bot.send_message(chat_id, 'кок')
-        
+
         # just in case
         case _:
             await bot.send_message(chat_id, f'э бля а как ответить на это говно: {match_result}')
             raise ValueError(f"Invalid match result: {match_result} in message: {message.text}")
+
+@messages_router.message(F.text, CustomFilters.is_yes_no_question)
+async def SOSAL(message: Message) -> None:
+    """
+    Сосал?
+    :param message:  Сообщение тг
+    """
+    chat_id = message.chat.id
+    await asleep(1)
+    await bot.send_message(chat_id, "Сосал?")
