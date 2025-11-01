@@ -11,6 +11,12 @@ class ChatUtils:
     #TODO возможно стоит вынести в настройки
     USER_LINK: Final[str] = '[{}](tg://user?id={})'
 
+    #TODO написать потом утилиту для строк. Пока размещу тут, мне надо быстро
+    #TODO это явно не всё, надо будет расширять
+    MAPPING: dict[str, str] = {'*': r'\*', '|': r'\|', '_': r'\_', '{': r'\{', '}': r'\}',
+                               '(': r'\(', ')' : r'\)', '[': r'\[', ']': r'\]', '-': r'\-',
+                               '.': r'\.', '`': r'\`', '#': r'\#', '+': '\+', '!': r'\!'}
+
     """
     Утилиты для работы с чатом
     """
@@ -53,6 +59,10 @@ class ChatUtils:
             member: ChatMember
             async for member in app.get_chat_members(chat_id):
                 if member.user and not member.user.is_bot:
-                    user_link = cls.USER_LINK.format(member.user.first_name, member.user.id)
+                    #TODO экранирование строки потом поменять
+                    name = member.user.first_name
+                    for char, escaped in cls.MAPPING.items():
+                        name = name.replace(char, escaped)
+                    user_link = cls.USER_LINK.format(name, member.user.id)
                     result.append(''.join([user_link, '\n']))
         return result
