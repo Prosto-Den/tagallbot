@@ -100,7 +100,7 @@ async def tag_all(message: Message) -> None:
     usernames: list = await ChatUtils.get_chat_members(chat_id)
     text: str = ''.join(usernames)
 
-    await message.reply(text)
+    await message.reply(text, parse_mode='MarkdownV2')
 
 
 @messages_router.message(Command(commands = ['react']), CustomFilters.has_reply_message)
