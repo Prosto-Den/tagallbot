@@ -3,6 +3,7 @@ from aiogram.types import Message
 from dataclasses import dataclass
 from bot import bot
 from random import randint
+from utils.string_utils import StringUtils
 import re
 
 
@@ -114,11 +115,15 @@ class CustomFilters:
         return True
 
     @staticmethod
-    async def random(chance: int) -> True:
+    async def random(chance: int) -> bool:
         """
         Выполнить обработку сообщения с некоторым шансом
-        :param chance: Шанс обработки сообщения. Принимается значение от 0 до 100 (0 - сообщение обработано не будет,
-        100 - сообщение будет обработано
+        :param chance: Шанс обработки сообщения (<=0 - сообщение обработано не будет,
+        >=100 - сообщение будет обработано
         :return: True - обработать сообщение, False - не обрабатывать
         """
         return randint(0, 99) < chance
+
+    @staticmethod
+    async def is_gru_in_message(message: Message) -> bool:
+        return re.search(r'\b[Гг][Рр][Юю]\b', message.text) is not None
