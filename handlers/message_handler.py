@@ -83,11 +83,14 @@ async def spam(message: Message) -> None:
                         break
 
             except ValueError:
+                bot.get_logger().warn(f"Неправильное кол-во сообщений: {message.text}")
                 await message.reply('Нормально кол-во сообщений укажи')
 
             except SyntaxError:
+                bot.get_logger().warn(f"Неправильное использование команды: {message.text}")
                 await message.reply('Нормально команду напиши')
         case _:
+            bot.get_logger().warn(f"Неправильное использование команды: {message.text}")
             await message.reply('Нормально команду напиши')
 
 
@@ -180,7 +183,7 @@ async def prekl_message(message: Message) -> None:
         # just in case
         case _:
             await bot.send_message(chat_id, f'э бля а как ответить на это говно: {match_result}')
-            raise ValueError(f"Invalid match result: {match_result} in message: {message.text}")
+            bot.get_logger().warn(f"Не получилось ответить на сообщение {message.text}")
 
 @messages_router.message(F.text, CustomFilters.is_yes_no_question)
 async def SOSAL(message: Message) -> None:
