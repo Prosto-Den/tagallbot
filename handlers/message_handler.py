@@ -144,7 +144,7 @@ async def send_gru_image(message: Message) -> None:
 
     path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'gru.jpg')
     gru_photo = FSInputFile(path_to_photo)
-    gru_text = re.search(r'\b[Гг][Рр][Юю]\b', message.text).group().replace(' ', '')
+    gru_text = re.search(r'\b[Гг][Рр][Юю]\b', message.text).group()
 
     await bot.send_photo(chat_id, gru_photo, reply_to_message_id=message.message_id,
                          reply_parameters=ReplyParameters(message_id=message.message_id,

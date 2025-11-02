@@ -3,7 +3,6 @@ from aiogram.types import Message
 from dataclasses import dataclass
 from bot import bot
 from random import randint
-from utils.string_utils import StringUtils
 import re
 
 
