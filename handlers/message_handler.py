@@ -11,6 +11,7 @@ from random import choice
 from asyncio import sleep as asleep
 from utils.path_helper import PathHelper
 import re
+from aiogram.exceptions import TelegramBadRequest
 
 #TODO поместить бы это всё дело в класс...
 
@@ -114,10 +115,13 @@ async def set_reaction(message:Message) -> None:
     Ставит реакцию на сообщение (/react <эмоджи>)
     :param message: Сообщение в телеграмме
     """
-    reaction = ReactionTypeEmoji(emoji=message.text.split(' ')[-1])
-    if reaction in message.chat.available_reactions:
+    emoji = message.text.split(' ')[-1]
+    reaction = ReactionTypeEmoji(emoji=emoji)
+    try:
+        bot.get_logger().info(f'Пробуем поставить реакцию: {emoji}')
         await message.reply_to_message.react([reaction])
-    else:
+    except TelegramBadRequest:
+        bot.get_logger().error(f'Ошибка при попытке поставить реакцию: {emoji}')
         await message.reply('Нормально команду используй')
 
 
