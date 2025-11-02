@@ -1,15 +1,24 @@
 import os
 from typing import Final
+from enum import StrEnum, auto
 
 
 class PathHelper:
     """
     Класс для облегчения взаимодействия с путями
     """
+    class ResourcesFolders(StrEnum):
+        """
+        Перечисление со всеми папками внутри ресурсов
+        """
+        IMAGES = auto()
+
     __root_path: str = None
     __INIT_FILE_NAME: Final[str] = "__init__.py"
     __SETTINGS_FOLDER: Final[str] = 'settings'
     __SESSION_FOLDER: Final[str] = 'session'
+    __LOG_FOLDER: Final[str] = 'log'
+    __RESOURCES_FOLDER: Final[str] = 'resources'
 
     @classmethod
     def join(cls, *args: str) -> str:
@@ -44,6 +53,21 @@ class PathHelper:
         Возвращает путь к папке с созданными сессиями
         """
         return cls.join(cls.get_root_path(), cls.__SESSION_FOLDER)
+
+    @classmethod
+    def get_log_folder(cls) -> str:
+        """
+        Возвращает путь к папке с логами
+        """
+        return cls.join(cls.get_root_path(), cls.__LOG_FOLDER)
+
+    @classmethod
+    def get_resources_folder(cls) -> str:
+        return cls.join(cls.get_root_path(), cls.__RESOURCES_FOLDER)
+
+    @classmethod
+    def get_images_folder(cls) -> str:
+        return cls.join(cls.get_resources_folder(), cls.ResourcesFolders.IMAGES)
 
     @classmethod
     def __find_root_path(cls, path: str) -> str:

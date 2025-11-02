@@ -3,12 +3,14 @@ from aiogram.filters import Command
 from settings import Settings
 from aiogram import Router, F
 from utils.chat_utils import ChatUtils
-from aiogram.types import Message, ReactionTypeEmoji
+from aiogram.types import Message, ReactionTypeEmoji, ReplyParameters, FSInputFile
 from typing import NoReturn, Sequence
 from filters import CustomFilters, SupportMessage
 from sys import getsizeof
 from random import choice
 from asyncio import sleep as asleep
+from utils.path_helper import PathHelper
+import re
 
 #TODO поместить бы это всё дело в класс...
 
@@ -109,10 +111,8 @@ async def set_reaction(message:Message) -> None:
     Ставит реакцию на сообщение (/react <эмоджи>)
     :param message: Сообщение в телеграмме
     """
-    emoji: str = message.text.split(' ')[-1]
-
-    if emoji in Settings.get_settings().AVAILABLE_REACTIONS:
-        reaction = ReactionTypeEmoji(emoji = emoji)
+    reaction = ReactionTypeEmoji(emoji=message.text.split(' ')[-1])
+    if reaction in message.chat.available_reactions:
         await message.reply_to_message.react([reaction])
     else:
         await message.reply('Нормально команду используй')
@@ -137,8 +137,23 @@ async def repeat_message(message: Message) -> None:
     await bot.send_message(message.chat.id, message.text)
     SupportMessage.get(message.chat.id).sent_message = message.text
 
+
+@messages_router.message(F.text, CustomFilters.is_gru_in_message)
+async def send_gru_image(message: Message) -> None:
+    chat_id: int = message.chat.id
+
+    path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'gru.jpg')
+    gru_photo = FSInputFile(path_to_photo)
+    gru_text = re.search(r'\b[Гг][Рр][Юю]\b', message.text).group()
+
+    await bot.send_photo(chat_id, gru_photo, reply_to_message_id=message.message_id,
+                         reply_parameters=ReplyParameters(message_id=message.message_id,
+                                                          chat_id=chat_id,
+                                                          quote=gru_text))
+
+
 @messages_router.message(F.text, CustomFilters.is_prekl)
-async def KOK(message: Message) -> None:
+async def prekl_message(message: Message) -> None:
     """
     Для "приколов" в чате. На да ответит что нужно, на нет тоже.
     :param message: Сообщение в тг
@@ -148,8 +163,13 @@ async def KOK(message: Message) -> None:
 
     match match_result:
         case 'да':
-            text = choice(['манда', 'пизда'])
-            await bot.send_message(chat_id, text)
+            text = choice(['манда', 'пизда', 'стикер'])
+
+            if text == 'стикер':
+                await bot.send_sticker(chat_id,
+                                       'CAACAgIAAxkBAAEPr09pB5QDTCHtzfEGYoAtOcndtc03MQAC1RMAAhHkuUghZnRitjQWEzYE')
+            else:
+                await bot.send_message(chat_id, text)
 
         case 'нет':
             await bot.send_message(chat_id, 'минет')
