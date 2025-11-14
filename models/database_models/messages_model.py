@@ -1,11 +1,32 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.types import Integer, Text
+from typing import override
+from enum import StrEnum, auto
+
+
+class ModelTypes(StrEnum):
+    """
+    Перечисление с типами таблиц
+    """
+    BASE = auto()
+    CHATS = auto()
+    ADMINS = auto()
+    #MESSAGES = auto()
 
 
 class Base(DeclarativeBase):
-    # id чата. Будем брать id, который даёт Telegram
-    id: Mapped[int] = mapped_column('id', Integer, primary_key=True)
+    """
+    Базовый класс для моделей
+    """
+    #TODO я не знаю, как по-нормальному сделать, но я не хочу писать метод для каждого класса
+    @property
+    def type(self) -> ModelTypes:
+        """
+        Выдать тип модели
+        :return: Тип Модели
+        """
+        return ModelTypes.BASE
 
 
 class Chats(Base):
@@ -22,6 +43,12 @@ class Chats(Base):
     owner: Mapped[int] = mapped_column('owner', Integer)
 
 
+    @override
+    @property
+    def type(self) -> ModelTypes:
+        return ModelTypes.CHATS
+
+
 class Admins(Base):
     """
     Таблица с данными по администраторам чатов
@@ -34,18 +61,29 @@ class Admins(Base):
     chat_id: Mapped[int] = mapped_column('chat_id', ForeignKey('chats.id'))
 
 
-class Messages(Base):
-    """
-    Модель для хранения сообщений чата
-    """
-    __tablename__ = 'messages'
-
-    # id сообщения. Будем брать id, который даёт Telegram
-    id: Mapped[int] = mapped_column('id', Integer, primary_key=True)
-    # текст сообщения. Будем хранить только уникальные тексты, не имеет смысла хранить одинаковые фразы
-    text: Mapped[str] = mapped_column('text', Text, unique=True)
-    # id чата. Внешний ключ к таблице Chats
-    chat_id: Mapped[int] = mapped_column('chat_id', ForeignKey('chats.id'))
-    admin_id: Mapped[int] = mapped_column('admin_id', ForeignKey('admins.id'))
+    @override
+    @property
+    def type(self) -> ModelTypes:
+        return ModelTypes.ADMINS
 
 
+# class Messages(Base):
+#     """
+#     Модель для хранения сообщений чата
+#     """
+#     __tablename__ = 'messages'
+#
+#     # id сообщения. Будем брать id, который даёт Telegram
+#     id: Mapped[int] = mapped_column('id', Integer, primary_key=True)
+#     # текст сообщения. Будем хранить только уникальные тексты, не имеет смысла хранить одинаковые фразы
+#     text: Mapped[str] = mapped_column('text', Text, unique=True)
+#     # id чата. Внешний ключ к таблице Chats
+#     chat_id: Mapped[int] = mapped_column('chat_id', ForeignKey('chats.id'))
+#     # id администратора. Внешний ключ к таблице Admins
+#     admin_id: Mapped[int] = mapped_column('admin_id', ForeignKey('admins.id'))
+#
+#
+#     @override
+#     @property
+#     def type(self) -> ModelTypes:
+#         return ModelTypes.MESSAGES
