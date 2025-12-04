@@ -4,5 +4,7 @@
   "availableCommands": {
     "/all": "Отметить всех в чате",
     "/spam <n> <сообщение>": "Повторить <сообщение> <n> раз"
-  }
+  },
+  "dateFormat": "%d-%m-%Y",
+  "dateFormatWithTime": "%d-%m-%Y %H:%M:%S"
 }
