@@ -126,3 +126,8 @@ class CustomFilters:
     @staticmethod
     async def is_gru_in_message(message: Message) -> bool:
         return re.search(r'\b[Гг][Рр][Юю]\b', message.text) is not None
+
+    @staticmethod
+    async def is_apologies_in_message(message: Message) -> bool:
+        pattern = r'(?i)\b(прошу\s+(прост(?:и|ения)?|извинен(?:ия|ий)?)|(?:пожалуйста,?\s+)?(?:мне?\s+)?(?:очень\s+)?(извин(?:и(?:сь)?|яй?(?:те)?|яюсь)|прост(?:и(?:те)?|яюсь|ей?)))[!.]?'
+        return re.search(pattern, message.text) is not None
