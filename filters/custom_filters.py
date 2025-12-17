@@ -89,10 +89,10 @@ class CustomFilters:
         match = re.match(r'\b(ок|да|нет)[., ?!]*$', message.text.lower())
 
         if match:
-            bot.prekl_msg[message.chat.id] = match.group(1)
+            bot.messages[message.chat.id] = match.group(1)
             return True
 
-        bot.prekl_msg[message.chat.id] = ""
+        bot.messages[message.chat.id] = ""
         return False
 
     @staticmethod
@@ -125,4 +125,9 @@ class CustomFilters:
 
     @staticmethod
     async def is_gru_in_message(message: Message) -> bool:
-        return re.search(r'\b[Гг][Рр][Юю]\b', message.text) is not None
+        gru_text = re.search(r'\b[Гг][Рр][Юю]\b', message.text)
+        if gru_text:
+            bot.messages[message.chat.id] = gru_text.group()
+            return True
+        bot.messages[message.chat.id] = ''
+        return False

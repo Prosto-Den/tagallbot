@@ -11,7 +11,7 @@ class ProstoBot(Bot, metaclass=Singleton):
     """
     def __init__(self, token: str):
         super().__init__(token=token)
-        self.prekl_msg: dict[int, str] = dict()
+        self.messages: dict[int, str] = dict()
         self.__logger = Logger()
 
     #TODO мб логгер надо не сюда выносить

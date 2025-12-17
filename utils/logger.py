@@ -11,7 +11,7 @@ def today() -> str:
 
 
 class Logger(metaclass=Singleton):
-    __FORMATTER: Final[logging.Formatter] = logging.Formatter("%(asctime)s %(levelname)s %(message)s",
+    __FORMATTER: Final[logging.Formatter] = logging.Formatter("%(asctime)s %(levelname)s %(messages)s",
                                                               datefmt='%d-%m-%Y %H:%M:%S')
     __LOGGER_LEVEL: Final[int] = logging.DEBUG
 

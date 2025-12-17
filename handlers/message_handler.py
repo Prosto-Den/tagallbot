@@ -151,12 +151,11 @@ async def send_gru_image(message: Message) -> None:
 
     path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'gru.jpg')
     gru_photo = FSInputFile(path_to_photo)
-    gru_text = re.search(r'\b[Гг][Рр][Юю]\b', message.text).group()
 
     await bot.send_photo(chat_id, gru_photo, reply_to_message_id=message.message_id,
                          reply_parameters=ReplyParameters(message_id=message.message_id,
                                                           chat_id=chat_id,
-                                                          quote=gru_text))
+                                                          quote=bot.messages.get(message.chat.id)))
 
 
 @messages_router.message(F.text, CustomFilters.is_prekl)
@@ -166,8 +165,9 @@ async def prekl_message(message: Message) -> None:
     :param message: Сообщение в тг
     """
     chat_id: int = message.chat.id
-    match_result = bot.prekl_msg.get(message.chat.id)
+    match_result = bot.messages.get(message.chat.id)
 
+    #TODO вынести захардкоженные значения
     match match_result:
         case 'да':
             text = choice(['манда', 'пизда', 'стикер'])
