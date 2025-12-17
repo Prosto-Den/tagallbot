@@ -166,7 +166,6 @@ async def send_shrek_apologies_image(message: Message) -> None:
 
     path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'shrek_apologies.png')
     shrek_photo = FSInputFile(path_to_photo)
-    shrek_text = re.search(r'(?i)\b(прошу\s+(прост(?:и|ения)?|извинен(?:ия|ий)?)|(?:пожалуйста,?\s+)?(?:мне?\s+)?(?:очень\s+)?(извин(?:и(?:сь)?|яй?(?:те)?|яюсь)|прост(?:и(?:те)?|яюсь|ей?)))[!.]?', message.text).group()
 
     await bot.send_photo(chat_id, shrek_photo, reply_to_message_id=message.message_id,
                          reply_parameters=ReplyParameters(message_id=message.message_id,
