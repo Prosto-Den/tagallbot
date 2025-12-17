@@ -162,6 +162,7 @@ async def send_gru_image(message: Message) -> None:
 @messages_router.message(F.text, CustomFilters.is_apologies_in_message)
 async def send_shrek_apologies_image(message: Message) -> None:
     chat_id: int = message.chat.id
+    match_result = bot.prekl_msg.get(message.chat.id)
 
     path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'shrek_apologies.png')
     shrek_photo = FSInputFile(path_to_photo)
@@ -170,7 +171,7 @@ async def send_shrek_apologies_image(message: Message) -> None:
     await bot.send_photo(chat_id, shrek_photo, reply_to_message_id=message.message_id,
                          reply_parameters=ReplyParameters(message_id=message.message_id,
                                                           chat_id=chat_id,
-                                                          quote=shrek_text))
+                                                          quote=match_result))
 
 @messages_router.message(F.text, CustomFilters.is_prekl)
 async def prekl_message(message: Message) -> None:
