@@ -9,9 +9,10 @@ from filters import CustomFilters, SupportMessage
 from sys import getsizeof
 from random import choice
 from asyncio import sleep as asleep
+from utils.json_reader import JsonReader
 from utils.path_helper import PathHelper
-import re
 from aiogram.exceptions import TelegramBadRequest
+from models.pydantic_models import StringsModel, StickersModel
 
 #TODO поместить бы это всё дело в класс...
 
@@ -149,6 +150,7 @@ async def repeat_message(message: Message) -> None:
 async def send_gru_image(message: Message) -> None:
     chat_id: int = message.chat.id
 
+    #TODO названия картинок нужно тоже вынести в какой-нибудь класс ресурсов
     path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'gru.jpg')
     gru_photo = FSInputFile(path_to_photo)
 
@@ -166,23 +168,24 @@ async def prekl_message(message: Message) -> None:
     """
     chat_id: int = message.chat.id
     match_result = bot.messages.get(message.chat.id)
+    strings = JsonReader.read_as_model(PathHelper.get_strings_resource(), StringsModel)
 
     #TODO вынести захардкоженные значения
     match match_result:
-        case 'да':
-            text = choice(['манда', 'пизда', 'стикер'])
+        case strings.yes:
+            text = choice(strings.yes_prekls)
 
-            if text == 'стикер':
-                await bot.send_sticker(chat_id,
-                                       'CAACAgIAAxkBAAEPr09pB5QDTCHtzfEGYoAtOcndtc03MQAC1RMAAhHkuUghZnRitjQWEzYE')
+            if text == strings.sticker:
+                stickers = JsonReader.read_as_model(PathHelper.get_stickers_resource(), StickersModel)
+                await bot.send_sticker(chat_id, stickers.kirkorov_sticker)
             else:
                 await bot.send_message(chat_id, text)
 
-        case 'нет':
-            await bot.send_message(chat_id, 'минет')
+        case strings.no:
+            await bot.send_message(chat_id, strings.no_prekl)
 
-        case 'ок':
-            await bot.send_message(chat_id, 'кок')
+        case strings.ok:
+            await bot.send_message(chat_id, strings.kok)
 
         # just in case
         case _:
@@ -196,5 +199,6 @@ async def SOSAL(message: Message) -> None:
     :param message:  Сообщение тг
     """
     chat_id = message.chat.id
+    strings = JsonReader.read_as_model(PathHelper.get_strings_resource(), StringsModel)
     await asleep(1)
-    await bot.send_message(chat_id, "Сосал?")
+    await bot.send_message(chat_id, strings.sosal_question)

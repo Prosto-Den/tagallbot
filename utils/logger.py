@@ -10,6 +10,7 @@ def today() -> str:
     return datetime.datetime.today().strftime("%d-%m-%Y")
 
 
+#TODO все сообщения логгера надо из кода вынести в файл
 class Logger(metaclass=Singleton):
     __FORMATTER: Final[logging.Formatter] = logging.Formatter("%(asctime)s %(levelname)s %(messages)s",
                                                               datefmt='%d-%m-%Y %H:%M:%S')

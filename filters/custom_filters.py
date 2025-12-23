@@ -57,7 +57,7 @@ class CustomFilters:
         return current_state is not None
 
     @staticmethod
-    async def is_repeated(message: Message) -> bool:
+    def is_repeated(message: Message) -> bool:
         """
         Является ли это сообщение повторением предыдущего
         :param message: Сообщение в телеграмме
@@ -76,7 +76,7 @@ class CustomFilters:
         return False
 
     @staticmethod
-    async def has_reply_message(message: Message) -> bool:
+    def has_reply_message(message: Message) -> bool:
         """
         Является ли сообщение ответом на другое сообщение
         :param message: Сообщение
@@ -85,7 +85,12 @@ class CustomFilters:
         return message.reply_to_message is not None
 
     @staticmethod
-    async def is_prekl(message: Message) -> bool:
+    def is_prekl(message: Message) -> bool:
+        """
+        Можно ли ответить прикольчиком на сообщение
+        :param message: Сообщение из тг
+        :return: True - можно, иначе False
+        """
         match = re.match(r'\b(ок|да|нет)[., ?!]*$', message.text.lower())
 
         if match:
@@ -96,7 +101,7 @@ class CustomFilters:
         return False
 
     @staticmethod
-    async def is_yes_no_question(message: Message):
+    def is_yes_no_question(message: Message):
         """
         Содержит ли сообщение вопрос, на который можно ответить да/нет?
         :param message: Сообщение из тг
@@ -114,7 +119,7 @@ class CustomFilters:
         return True
 
     @staticmethod
-    async def random(chance: int) -> bool:
+    def random(chance: int) -> bool:
         """
         Выполнить обработку сообщения с некоторым шансом
         :param chance: Шанс обработки сообщения (<=0 - сообщение обработано не будет,
@@ -124,7 +129,12 @@ class CustomFilters:
         return randint(0, 99) < chance
 
     @staticmethod
-    async def is_gru_in_message(message: Message) -> bool:
+    def is_gru_in_message(message: Message) -> bool:
+        """
+        Содержит ли сообщение слово "грю"
+        :param message: Сообщение из тг
+        :return: True - содержит, иначе False
+        """
         gru_text = re.search(r'\b[Гг][Рр][Юю]\b', message.text)
         if gru_text:
             bot.messages[message.chat.id] = gru_text.group()

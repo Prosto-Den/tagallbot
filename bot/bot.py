@@ -4,12 +4,11 @@ from utils.singleton import Singleton
 from utils.logger import Logger
 
 
-#TODO проверить, что singleton ничего не сломал
 class ProstoBot(Bot, metaclass=Singleton):
     """
     Класс бота
     """
-    def __init__(self, token: str):
+    def __init__(self, token: str) -> None:
         super().__init__(token=token)
         self.messages: dict[int, str] = dict()
         self.__logger = Logger()
