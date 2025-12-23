@@ -7,11 +7,13 @@ class PathHelper:
     """
     Класс для облегчения взаимодействия с путями
     """
-    class ResourcesFolders(StrEnum):
+    class Resources(StrEnum):
         """
-        Перечисление со всеми папками внутри ресурсов
+        Перечисление со всеми файлами внутри ресурсов
         """
-        IMAGES = auto()
+        IMAGES = auto() # папка с картинками
+        STICKERS = 'stickers.json' # стикеры
+        STRINGS = 'strings.json' # строки
 
     __root_path: str = None
     __INIT_FILE_NAME: Final[str] = "__init__.py"
@@ -73,7 +75,21 @@ class PathHelper:
         """
         Возвращает путь к директории с изображениями
         """
-        return cls.join(cls.get_resources_folder(), cls.ResourcesFolders.IMAGES)
+        return cls.join(cls.get_resources_folder(), cls.Resources.IMAGES)
+
+    @classmethod
+    def get_strings_resource(cls) -> str:
+        """
+        Возвращает путь к файлу со строками
+        """
+        return cls.join(cls.get_resources_folder(), cls.Resources.STRINGS)
+
+    @classmethod
+    def get_stickers_resource(cls) -> str:
+        """
+        Возвращает путь к файлу с ID стикеров
+        """
+        return cls.join(cls.get_resources_folder(), cls.Resources.STICKERS)
 
     @classmethod
     def __find_root_path(cls, path: str) -> str:
