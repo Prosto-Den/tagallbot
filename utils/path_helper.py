@@ -50,23 +50,29 @@ class PathHelper:
     @classmethod
     def get_session_folder(cls) -> str:
         """
-        Возвращает путь к папке с созданными сессиями
+        Возвращает путь к директории с созданными сессиями
         """
         return cls.join(cls.get_root_path(), cls.__SESSION_FOLDER)
 
     @classmethod
     def get_log_folder(cls) -> str:
         """
-        Возвращает путь к папке с логами
+        Возвращает путь к директории с логами
         """
         return cls.join(cls.get_root_path(), cls.__LOG_FOLDER)
 
     @classmethod
     def get_resources_folder(cls) -> str:
+        """
+        Возвращает путь к директории с ресурсами
+        """
         return cls.join(cls.get_root_path(), cls.__RESOURCES_FOLDER)
 
     @classmethod
     def get_images_folder(cls) -> str:
+        """
+        Возвращает путь к директории с изображениями
+        """
         return cls.join(cls.get_resources_folder(), cls.ResourcesFolders.IMAGES)
 
     @classmethod

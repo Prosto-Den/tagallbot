@@ -3,32 +3,53 @@ import logging
 from typing import Final
 from utils.path_helper import PathHelper
 import os
+import datetime
+
+
+def today() -> str:
+    return datetime.datetime.today().strftime("%d-%m-%Y")
 
 
 class Logger(metaclass=Singleton):
-    __LOG_FILENAME: Final[str] = 'log.log'
-    __FORMAT: Final[str] = "%(asctime)s %(levelname)s %(message)s"
+    __FORMATTER: Final[logging.Formatter] = logging.Formatter("%(asctime)s %(levelname)s %(message)s",
+                                                              datefmt='%d-%m-%Y %H:%M:%S')
+    __LOGGER_LEVEL: Final[int] = logging.DEBUG
 
     def __init__(self) -> None:
         self.__logger = logging.getLogger()
-        log_path = PathHelper.join(PathHelper.get_log_folder(), self.__LOG_FILENAME)
 
         if not os.path.exists(log_folder := PathHelper.get_log_folder()):
             os.mkdir(log_folder)
 
-        self.__logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(self.__FORMAT)
+        self.__logger.setLevel(self.__LOGGER_LEVEL)
 
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(formatter)
-        stream_handler.setLevel(logging.DEBUG)
+        self.__stream_handler = logging.StreamHandler()
+        self.__stream_handler.setFormatter(self.__FORMATTER)
+        self.__stream_handler.setLevel(self.__LOGGER_LEVEL)
 
+        self.__file_handler = self.__create_file_handler()
+
+        self.__logger.addHandler(self.__stream_handler)
+        self.__logger.addHandler(self.__file_handler)
+
+    def __create_file_handler(self) -> logging.FileHandler:
+        """
+        Создаёт хендлер для записи логов в файл
+        :return: Хендлер для записи логов в файл
+        """
+        log_path = PathHelper.join(PathHelper.get_log_folder(), ''.join([today(), '.log']))
         file_handler = logging.FileHandler(log_path)
-        file_handler.setFormatter(formatter)
-        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(self.__FORMATTER)
+        file_handler.setLevel(self.__LOGGER_LEVEL)
+        return logging.FileHandler(log_path)
 
-        self.__logger.addHandler(stream_handler)
-        self.__logger.addHandler(file_handler)
+    def update_file_handler(self) -> None:
+        """
+        Метод для обновления хендлера файлов. Нужен, чтобы задать новое имя для файлов
+        """
+        self.__logger.removeHandler(self.__file_handler)
+        self.__file_handler = self.__create_file_handler()
+        self.__logger.addHandler(self.__file_handler)
 
     def info(self, message: str) -> None:
         """
