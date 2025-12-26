@@ -129,5 +129,5 @@ class CustomFilters:
 
     @staticmethod
     async def is_apologies_in_message(message: Message) -> bool:
-        pattern = r'(?i)\b(прошу\s+(прост(?:и|ения)?|извинен(?:ия|ий)?)|(?:пожалуйста,?\s+)?(?:мне?\s+)?(?:очень\s+)?(извин(?:и(?:сь)?|яй?(?:те)?|яюсь)|прост(?:и(?:те)?|яюсь|ей?)))[!.]?'
+        pattern = r'(?i)\b(?:извини(?:те)?|простите|прошу\s+прощения|приношу\s+извинения|сорри|прости)\b'
         return re.search(pattern, message.text) is not None
