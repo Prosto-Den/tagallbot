@@ -12,6 +12,7 @@ class PathHelper:
         Перечисление со всеми папками внутри ресурсов
         """
         IMAGES = auto()
+        TEMP = auto()
 
     __root_path: str = None
     __INIT_FILE_NAME: Final[str] = "__init__.py"
@@ -19,6 +20,7 @@ class PathHelper:
     __SESSION_FOLDER: Final[str] = 'session'
     __LOG_FOLDER: Final[str] = 'log'
     __RESOURCES_FOLDER: Final[str] = 'resources'
+    __DATABASE_FILENAME: Final[str] = 'database.db'
 
     @classmethod
     def join(cls, *args: str) -> str:
@@ -74,6 +76,20 @@ class PathHelper:
         Возвращает путь к директории с изображениями
         """
         return cls.join(cls.get_resources_folder(), cls.ResourcesFolders.IMAGES)
+
+    @classmethod
+    def get_temp_folder(cls) -> str:
+        """
+        Возвращает путь к папке для временных файлов
+        """
+        return cls.join(cls.get_resources_folder(), cls.ResourcesFolders.TEMP)
+
+    @classmethod
+    def get_database_path(cls) -> str:
+        """
+        Возвращает путь к файлу базы данных
+        """
+        return cls.join(cls.get_root_path(), cls.__DATABASE_FILENAME)
 
     @classmethod
     def __find_root_path(cls, path: str) -> str:

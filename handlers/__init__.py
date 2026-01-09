@@ -1,1 +1,2 @@
-from .message_handler import messages_router
+from handlers.message_handler import messages_router
+from handlers.command_handler import commands_router

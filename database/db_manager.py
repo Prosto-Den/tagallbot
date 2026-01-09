@@ -1,31 +1,53 @@
-from sqlalchemy import create_engine
-from sqlalchemy import Engine
-from utils.singleton import Singleton
-from sqlalchemy.orm import Session
-from models.database_models.messages_model import Chats, Admins, Base
-from sqlalchemy import select, update, insert, Executable, Row
-from aiogram.types import Message
-from typing import Type, Sequence, Any
+import aiosqlite as asql
+from models.database_models import BaseDBModel
+from utils.path_helper import PathHelper
+from typing import Type, TypeVar
 
 
-class DBManager(metaclass=Singleton):
-    def __init__(self) -> None:
-        self.__engine = create_engine('sqlite:///./base.db')
-        self.__connection = self.__engine.connect()
+T = TypeVar('T', bound=BaseDBModel)
 
-        Base.metadata.create_all(self.__engine)
 
-    def __del__(self) -> None:
-        self.__connection.close()
+class DBManager:
+    """
+    Класс для работы с БД
+    """
+    @classmethod
+    async def execute(cls, statement: str, *args) -> None:
+        """
+        Выполнить запрос
+        :param statement: Текст запроса
+        :param args: Параметры запроса
+        """
+        async with asql.connect(PathHelper.get_database_path()) as conn:
+            cursor: asql.Cursor
+            async with conn.cursor() as cursor:
+                await cursor.execute(statement, *args)
+                await conn.commit()
 
-    def execute_with_fetchall(self, statement: Executable) -> Sequence[Row[Any]]:
-        cursor = self.__connection.execute(statement)
-        return cursor.fetchall()
+    @classmethod
+    async def execute_one(cls, statement: str, model: Type[T], *args) -> T | None:
+        """
+        Выполнить запрос и получить один элемент данных
+        :param statement: Текст запроса
+        :param model: Тип для выходной модели
+        :param args: Параметры запроса
+        :return: Модель типа model, наполненная данными из БД, если запрос выполнился удачно, иначе None
+        """
+        result = await cls.execute_many(statement, model, *args)
+        return result[0] if result else None
 
-    def execute_with_fetchone(self, statement: Executable) -> Sequence[Row[Any]]:
-        cursor = self.__connection.execute(statement)
-        return cursor.fetchone()
-
-    def execute_with_commit(self, statement: Executable) -> None:
-        self.__connection.execute(statement)
-        self.__connection.commit()
+    @classmethod
+    async def execute_many(cls, statement: str, model: Type[T], *args) -> list[T]:
+        """
+        Выполнить запрос и получить несколько элементов с данными
+        :param statement: Текст запроса
+        :param model: Тип для выходной модели
+        :param args: Параметры запроса
+        :return: Список с моделями типа model, если запрос выполнился удачно, иначе пустой список
+        """
+        async with asql.connect(PathHelper.get_database_path()) as conn:
+            cursor: asql.Cursor
+            async with conn.cursor() as cursor:
+                await cursor.execute(statement, args)
+                rows = await cursor.fetchall()
+        return [model.create_from_row(row) for row in rows]
