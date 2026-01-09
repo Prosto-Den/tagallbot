@@ -1,7 +1,7 @@
 import aiosqlite as asql
 from models.database_models import BaseDBModel
 from utils.path_helper import PathHelper
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Callable
 
 
 T = TypeVar('T', bound=BaseDBModel)
@@ -14,7 +14,7 @@ class DBManager:
     @classmethod
     async def execute(cls, statement: str, *args) -> None:
         """
-        Выполнить запрос
+        Выполнить запрос и сохранить изменения
         :param statement: Текст запроса
         :param args: Параметры запроса
         """
@@ -33,8 +33,12 @@ class DBManager:
         :param args: Параметры запроса
         :return: Модель типа model, наполненная данными из БД, если запрос выполнился удачно, иначе None
         """
-        result = await cls.execute_many(statement, model, *args)
-        return result[0] if result else None
+        async with asql.connect(PathHelper.get_database_path()) as conn:
+            cursor: asql.Cursor
+            async with conn.cursor() as cursor:
+                await cursor.execute(statement, *args)
+                row = await cursor.fetchone()
+        return model.create_from_row(row) if row else None
 
     @classmethod
     async def execute_many(cls, statement: str, model: Type[T], *args) -> list[T]:
@@ -48,6 +52,6 @@ class DBManager:
         async with asql.connect(PathHelper.get_database_path()) as conn:
             cursor: asql.Cursor
             async with conn.cursor() as cursor:
-                await cursor.execute(statement, args)
+                await cursor.execute(statement, *args)
                 rows = await cursor.fetchall()
         return [model.create_from_row(row) for row in rows]

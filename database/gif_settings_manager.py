@@ -5,7 +5,7 @@ from models.database_models import GifSettingsModel
 
 class GIFSettingsSQL(StrEnum):
     """
-    Запросы для SQL
+    Запросы для таблицы с настройками создания гифок
     """
     # создать таблицу, если её ещё нет
     CREATE_GIF_SETTINGS_TABLE = ("CREATE TABLE IF NOT EXISTS gif_settings("
@@ -23,8 +23,16 @@ class GIFSettingsSQL(StrEnum):
 
 
 class GifSettingManager:
+    """
+    Менеджер для работы с таблицей настроек создания гифок
+    """
     @classmethod
     async def get_or_create_settings(cls, user_id: int) -> GifSettingsModel:
+        """
+        Получить настройки создания гифок для пользователя
+        :param user_id: ID пользователя
+        :return: Модель с данными из БД, если запись пользователя в БД есть, иначе модель со значениями по умолчанию
+        """
         model = await DBManager.execute_one(GIFSettingsSQL.GET_SETTINGS, GifSettingsModel, user_id)
         if model is None:
             default = GifSettingsModel(user_id)
@@ -34,8 +42,16 @@ class GifSettingManager:
 
     @classmethod
     async def add_settings(cls, model: GifSettingsModel) -> None:
+        """
+        Добавить запись с настройками в БД
+        :param model: Модель с данными
+        """
         await DBManager.execute(GIFSettingsSQL.ADD_SETTINGS, model.as_tuple())
 
     @classmethod
     async def update_settings(cls, model: GifSettingsModel) -> None:
+        """
+        Обновить данные в БД для пользователя
+        :param model: Модель с новыми данными
+        """
         await DBManager.execute(GIFSettingsSQL.UPDATE_SETTINGS, model.as_tuple())
