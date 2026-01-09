@@ -169,7 +169,7 @@ bot_config.json
 # активные сессии
 session/*
 # база данных со вспомогательной информацией
-base.db
+database.db
 # файлы для тестирования
 test.py
 qwe.py
