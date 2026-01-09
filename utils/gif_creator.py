@@ -2,6 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from utils.path_helper import PathHelper
 from typing import Final
 import os
+import platform
 
 
 class GIFCreator:
@@ -23,6 +24,7 @@ class GIFCreator:
         :return: Путь к созданной гифке
         """
         #TODO стоит ли задавать возможность менять шрифт?
+        font = 'arial.ttf' if platform.system() == 'Windows' else 'DejaVuSerif.ttf'
         font = ImageFont.truetype("arial.ttf", height - 5)
 
         # временное изображение для замера текста
