@@ -24,8 +24,8 @@ class GIFCreator:
         :return: Путь к созданной гифке
         """
         #TODO стоит ли задавать возможность менять шрифт?
-        font = 'arial.ttf' if platform.system() == 'Windows' else 'DejaVuSerif.ttf'
-        font = ImageFont.truetype("arial.ttf", height - 5)
+        font_type = 'arial.ttf' if platform.system() == 'Windows' else 'DejaVuSerif.ttf'
+        font = ImageFont.truetype(font_type, height - 5)
 
         # временное изображение для замера текста
         text_height = height
