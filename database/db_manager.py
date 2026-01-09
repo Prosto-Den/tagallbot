@@ -21,7 +21,7 @@ class DBManager:
         async with asql.connect(PathHelper.get_database_path()) as conn:
             cursor: asql.Cursor
             async with conn.cursor() as cursor:
-                await cursor.execute(statement, *args)
+                await cursor.execute(statement, args)
                 await conn.commit()
 
     @classmethod
@@ -36,7 +36,7 @@ class DBManager:
         async with asql.connect(PathHelper.get_database_path()) as conn:
             cursor: asql.Cursor
             async with conn.cursor() as cursor:
-                await cursor.execute(statement, *args)
+                await cursor.execute(statement, args)
                 row = await cursor.fetchone()
         return model.create_from_row(row) if row else None
 
@@ -52,6 +52,6 @@ class DBManager:
         async with asql.connect(PathHelper.get_database_path()) as conn:
             cursor: asql.Cursor
             async with conn.cursor() as cursor:
-                await cursor.execute(statement, *args)
+                await cursor.execute(statement, args)
                 rows = await cursor.fetchall()
         return [model.create_from_row(row) for row in rows]
