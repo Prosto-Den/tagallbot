@@ -79,7 +79,7 @@ class CustomFilters:
     async def has_reply_message(message: Message) -> bool:
         """
         Является ли сообщение ответом на другое сообщение
-        :param message: Сообщение
+        :param message: Сообщение из тг
         :return: True - сообщение отвечает на какое-то сообщение, иначе False
         """
         return message.reply_to_message is not None
@@ -89,10 +89,10 @@ class CustomFilters:
         match = re.match(r'\b(ок|да|нет)[., ?!]*$', message.text.lower())
 
         if match:
-            bot.prekl_msg[message.chat.id] = match.group(1)
+            bot.saved_msg[message.chat.id] = match.group(1)
             return True
 
-        bot.prekl_msg[message.chat.id] = ""
+        bot.saved_msg[message.chat.id] = ""
         return False
 
     @staticmethod
@@ -125,7 +125,17 @@ class CustomFilters:
 
     @staticmethod
     async def is_gru_in_message(message: Message) -> bool:
-        return re.search(r'\b[Гг][Рр][Юю]\b', message.text) is not None
+        """
+        Есть ли имя "Грю" в тексте сообщения?
+        :param message: Сообщение из Тг
+        :return: True - имя есть в сообщении, подстрока с именем сохранится в боте. False - подстроки в сообщении
+        нет, сохранённое в боте сообщение очистится
+        """
+        if (search := re.search(r'\b[Гг][Рр][Юю]\b', message.text)) is not None:
+            bot.saved_msg[message.chat.id] = search.group()
+            return True
+        bot.saved_msg[message.chat.id] = ""
+        return False
 
     @staticmethod
     async def is_apologies_in_message(message: Message) -> bool:

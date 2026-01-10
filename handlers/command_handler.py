@@ -13,6 +13,8 @@ from database.gif_settings_manager import GifSettingManager
 from keyboards.inline_keyboard import gif_settings_keyboard, GifSettingsCallBackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from resources.resource_handler import ResourceHandler
+from custom_types import ChatTypes, ChatActions
 
 
 commands_router = Router()
@@ -33,7 +35,7 @@ async def help(message: Message) -> None:
     Выводит информацию о доступных командах (/help)
     :param message: Сообщение в телеграмме
     """
-    text = '\n'.join([f'{key} - {value}' for key, value in Settings.get_settings().AVAILABLE_COMMANDS.items()])
+    text = '\n'.join([f'{key} - {value}' for key, value in ResourceHandler.get_available_commands().items()])
     await message.reply(text)
 
 
@@ -62,13 +64,16 @@ async def spam(message: Message) -> None:
     message_text: list[str] = message.text.replace('\n', ' ').split(' ')
     message_counter: int = 0
 
+    strings = ResourceHandler.get_strings_resources()
+    logger_strings = ResourceHandler.get_logger_strings_resources()
+
     #TODO хочу вынести парсинг отсюда
     match message_text:
         case [_, number, *word]:
             try:
                 number = int(number)
                 if number > 1_000_000:
-                    await message.reply('В штангу дал?')
+                    await message.reply(strings.too_large_number)
                     return
                 __check_values(number, word)
 
@@ -76,7 +81,7 @@ async def spam(message: Message) -> None:
                 # dont ask
                 if ((getsizeof(repeat_string) - getsizeof(repeat_string[0]) + 1) * number
                         + getsizeof(repeat_string[0]) >= memory.max_ram):
-                    await message.reply('забыл...')
+                    await message.reply(strings.forget)
                     return
 
                 text: str = repeat_string * number
@@ -95,15 +100,15 @@ async def spam(message: Message) -> None:
                         break
 
             except ValueError:
-                bot.get_logger().warn(f"Неправильное кол-во сообщений: {message.text}")
-                await message.reply('Нормально кол-во сообщений укажи')
+                bot.get_logger().warn(logger_strings.incorrect_message_amount.format(message.text))
+                await message.reply(strings.incorrect_message_amount)
 
             except SyntaxError:
-                bot.get_logger().warn(f"Неправильное использование команды: {message.text}")
-                await message.reply('Нормально команду напиши')
+                bot.get_logger().warn(logger_strings.incorrect_message_use.format(message.text))
+                await message.reply(strings.incorrect_command_use)
         case _:
-            bot.get_logger().warn(f"Неправильное использование команды: {message.text}")
-            await message.reply('Нормально команду напиши')
+            bot.get_logger().warn(logger_strings.incorrect_message_use.format(message.text))
+            await message.reply(strings.incorrect_command_use)
 
 
 @commands_router.message(Command(commands=['all']))
@@ -137,12 +142,14 @@ async def set_reaction(message: Message) -> None:
     """
     emoji = message.text.split(' ')[-1]
     reaction = ReactionTypeEmoji(emoji=emoji)
+    strings = ResourceHandler.get_strings_resources()
+    logger_strings = ResourceHandler.get_logger_strings_resources()
     try:
-        bot.get_logger().info(f'Пробуем поставить реакцию: {emoji}')
+        bot.get_logger().info(logger_strings.try_to_set_reaction.format(emoji))
         await message.reply_to_message.react([reaction])
     except TelegramBadRequest:
-        bot.get_logger().error(f'Ошибка при попытке поставить реакцию: {emoji}')
-        await message.reply('Нормально команду используй')
+        bot.get_logger().error(logger_strings.set_reaction_error.format(emoji))
+        await message.reply(strings.incorrect_command_use)
 
 
 @commands_router.message(Command(commands=['gif']), F.text)
@@ -155,8 +162,10 @@ async def create_and_send_gif(message: Message) -> None:
     user_id = message.from_user.id
     message_text = message.text.split(' ')
     settings = await GifSettingManager.get_or_create_settings(user_id)
+    strings = ResourceHandler.get_strings_resources()
+    logger_strings = ResourceHandler.get_logger_strings_resources()
 
-    await bot.send_chat_action(chat_id, 'upload_document')
+    await bot.send_chat_action(chat_id, ChatActions.UPLOAD_DOCUMENT)
     match message_text:
         case [_, *text]:
             text = ' '.join(text)
@@ -164,8 +173,8 @@ async def create_and_send_gif(message: Message) -> None:
             await bot.send_document(chat_id, gif_file)
 
         case _:
-            await message.reply('Нормально команду используй')
-            bot.get_logger().warn(f'Не удалось выполнить команду {message.text}')
+            await message.reply(strings.incorrect_command_use)
+            bot.get_logger().warn(logger_strings.command_error.format(message.text))
 
     GIFCreator.delete_gif()
 
@@ -176,18 +185,14 @@ async def gif_settings(message: Message) -> None:
     Настройки для создания гифок (/settings). Работает только при личной переписке с ботом
     :param message: Сообщение в телеграмме
     """
-    if message.chat.type != 'private':
-        await message.reply('Пойдём в лс пообщаемся')
+    strings = ResourceHandler.get_strings_resources()
+    if message.chat.type != ChatTypes.PRIVATE:
+        await message.reply(strings.go_to_private)
     else:
         chat_id: int = message.chat.id
-        user_id = message.from_user.id
+        user_id: int = message.from_user.id
         settings = await GifSettingManager.get_or_create_settings(user_id)
-        text = ("🛠Текущие настройки🛠:\n"
-                "↔️ Ширина гифки: {}\n"
-                "↕️ Высота гифки: {}\n"
-                "⏪ Скорость гифки: {}\n"
-                "Что хочешь поменять?")
-        await bot.send_message(chat_id, text.format(settings.width, settings.height, settings.speed),
+        await bot.send_message(chat_id, strings.gif_settings.format(settings.width, settings.height, settings.speed),
                                reply_markup=gif_settings_keyboard)
 
 
@@ -198,22 +203,25 @@ async def start_edit_settings(callback: CallbackQuery, state: FSMContext) -> Non
     :param callback: Нажатие на кнопку
     :param state: Машина состояний
     """
+    strings = ResourceHandler.get_strings_resources()
+    logger_strings = ResourceHandler.get_logger_strings_resources()
+
     match callback.data:
         case GifSettingsCallBackData.WIDTH:
             await state.set_state(GifSettingsStateMachine.width)
-            await callback.message.edit_text('Введите ширину гифки', reply_markup=None)
+            await callback.message.edit_text(strings.enter_width, reply_markup=None)
 
         case GifSettingsCallBackData.HEIGHT:
             await state.set_state(GifSettingsStateMachine.height)
-            await callback.message.edit_text('Введите высоту гифки', reply_markup=None)
+            await callback.message.edit_text(strings.enter_height, reply_markup=None)
 
         case GifSettingsCallBackData.SPEED:
             await state.set_state(GifSettingsStateMachine.speed)
-            await callback.message.edit_text('Введите скорость гифки', reply_markup=None)
+            await callback.message.edit_text(strings.enter_speed, reply_markup=None)
 
         case _:
-            await callback.message.reply('Что-то пошло не так :(')
-            bot.get_logger().warn(f'Не удалось обработать запрос: {callback.message.text}')
+            await callback.message.reply(strings.something_went_wrong)
+            bot.get_logger().warn(logger_strings.callback_error.format(callback.message.text))
 
 
 @commands_router.message(F.text, CustomFilters.is_any_state)
@@ -227,6 +235,8 @@ async def apply_settings(message: Message, state: FSMContext) -> None:
     chat_id: int = message.chat.id
     value: int = int(message.text)
     settings = await GifSettingManager.get_or_create_settings(user_id)
+    strings = ResourceHandler.get_strings_resources()
+    logger_strings = ResourceHandler.get_logger_strings_resources()
 
     if value > 0:
         match await state.get_state():
@@ -238,19 +248,19 @@ async def apply_settings(message: Message, state: FSMContext) -> None:
                 if value >= 6:
                     settings.height = value
                 else:
-                    await message.reply('Недопустимо')
-                    bot.get_logger().warn(f'Не удалось применить значение: {message.text}')
+                    await message.reply(strings.incorrect_value)
+                    bot.get_logger().warn(logger_strings.error_value.format(message.text))
 
             case GifSettingsStateMachine.speed:
                 settings.speed = value
 
             case _:
-                await message.reply('Что-то пошло не так :(')
-                bot.get_logger().warn('Не удалось обновить настройки пользователя')
+                await message.reply(strings.something_went_wrong)
+                bot.get_logger().warn(logger_strings.settings_update_error)
     else:
-        await message.reply('Недопустимо')
-        bot.get_logger().warn(f'Введено недопустимое значение для параметра: {message.text}')
+        await message.reply(strings.incorrect_value)
+        bot.get_logger().warn(logger_strings.incorrect_value.format(message.text))
 
     await state.clear()
     await GifSettingManager.update_settings(settings)
-    await bot.send_message(chat_id, 'Настройки успешно применены!')
+    await bot.send_message(chat_id, strings.applied_successful)

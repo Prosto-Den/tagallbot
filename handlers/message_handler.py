@@ -1,10 +1,10 @@
 from bot import bot
 from aiogram import Router, F
-from aiogram.types import Message, ReplyParameters, FSInputFile
+from aiogram.types import Message, ReplyParameters
 from filters import CustomFilters, SupportMessage
 from random import choice
 from asyncio import sleep as asleep
-from utils.path_helper import PathHelper
+from resources import ResourceHandler, Images
 import re
 
 
@@ -27,28 +27,33 @@ async def repeat_message(message: Message) -> None:
 async def send_gru_image(message: Message) -> None:
     chat_id: int = message.chat.id
 
-    path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'gru.jpg')
-    gru_photo = FSInputFile(path_to_photo)
-    gru_text = re.search(r'\b[Гг][Рр][Юю]\b', message.text).group()
-
-    await bot.send_photo(chat_id, gru_photo, reply_to_message_id=message.message_id,
-                         reply_parameters=ReplyParameters(message_id=message.message_id,
-                                                          chat_id=chat_id,
-                                                          quote=gru_text))
+    if gru_photo := ResourceHandler.get_image_file(Images.gru_image):
+        await bot.send_photo(chat_id, gru_photo, reply_to_message_id=message.message_id,
+                            reply_parameters=ReplyParameters(message_id=message.message_id,
+                                                            chat_id=chat_id,
+                                                            quote=bot.saved_msg[chat_id]))
+    else:
+        strings = ResourceHandler.get_strings_resources()
+        logger_strings = ResourceHandler.get_logger_strings_resources()
+        await message.reply(strings.send_photo_error)
+        bot.get_logger().warn(logger_strings.search_file_error)
 
 
 @messages_router.message(F.text, CustomFilters.is_apologies_in_message)
 async def send_shrek_apologies_image(message: Message) -> None:
-    chat_id: int = message.chat.id
-    match_result = bot.prekl_msg.get(message.chat.id)
+    if shrek_photo := ResourceHandler.get_image_file(Images.shrek_image):
+        chat_id: int = message.chat.id
+        match_result = bot.saved_msg.get(message.chat.id)
+        await bot.send_photo(chat_id, shrek_photo, reply_to_message_id=message.message_id,
+                            reply_parameters=ReplyParameters(message_id=message.message_id,
+                                                            chat_id=chat_id,
+                                                            quote=match_result))
+    else:
+        strings = ResourceHandler.get_strings_resources()
+        logger_strings = ResourceHandler.get_logger_strings_resources()
+        await message.reply(strings.send_photo_error)
+        bot.get_logger().warn(logger_strings.search_file_error)
 
-    path_to_photo = PathHelper.join(PathHelper.get_images_folder(), 'shrek_apologies.png')
-    shrek_photo = FSInputFile(path_to_photo)
-
-    await bot.send_photo(chat_id, shrek_photo, reply_to_message_id=message.message_id,
-                         reply_parameters=ReplyParameters(message_id=message.message_id,
-                                                          chat_id=chat_id,
-                                                          quote=match_result))
 
 @messages_router.message(F.text, CustomFilters.is_prekl)
 async def prekl_message(message: Message) -> None:
@@ -57,28 +62,32 @@ async def prekl_message(message: Message) -> None:
     :param message: Сообщение в тг
     """
     chat_id: int = message.chat.id
-    match_result = bot.prekl_msg.get(message.chat.id)
+    match_result = bot.saved_msg.get(message.chat.id)
+    strings = ResourceHandler.get_strings_resources()
 
     match match_result:
-        case 'да':
-            text = choice(['манда', 'пизда', 'стикер'])
+        case strings.yes:
+            text = choice([strings.prekl1, strings.prekl2, strings.prekl3])
 
-            if text == 'стикер':
-                await bot.send_sticker(chat_id,
-                                       'CAACAgIAAxkBAAEPr09pB5QDTCHtzfEGYoAtOcndtc03MQAC1RMAAhHkuUghZnRitjQWEzYE')
+            if text == strings.prekl3:
+                stickers = ResourceHandler.get_stickers_resources()
+                await bot.send_sticker(chat_id, stickers.kirkorov)
             else:
                 await bot.send_message(chat_id, text)
 
-        case 'нет':
-            await bot.send_message(chat_id, 'минет')
+        case strings.no:
+            await bot.send_message(chat_id, strings.prekl4)
 
-        case 'ок':
-            await bot.send_message(chat_id, 'кок')
+        case strings.ok:
+            await bot.send_message(chat_id, strings.kok)
 
         # just in case
         case _:
-            await bot.send_message(chat_id, f'э бля а как ответить на это говно: {match_result}')
-            bot.get_logger().warn(f"Не получилось ответить на сообщение {message.text}")
+            strings = ResourceHandler.get_strings_resources()
+            logger_strings = ResourceHandler.get_logger_strings_resources()
+            await message.reply(strings.how_to_answer)
+            bot.get_logger().warn(logger_strings.answer_error.format(message.text))
+
 
 @messages_router.message(F.text, CustomFilters.is_yes_no_question)
 async def SOSAL(message: Message) -> None:
@@ -87,5 +96,6 @@ async def SOSAL(message: Message) -> None:
     :param message:  Сообщение тг
     """
     chat_id = message.chat.id
+    strings = ResourceHandler.get_strings_resources()
     await asleep(1)
-    await bot.send_message(chat_id, "Сосал?")
+    await bot.send_message(chat_id, strings.sosal)
