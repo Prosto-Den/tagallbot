@@ -13,6 +13,7 @@ class PathHelper:
         """
         IMAGES = auto()
         TEMP = auto()
+        STRINGS = auto()
 
     __root_path: str = None
     __INIT_FILE_NAME: Final[str] = "__init__.py"
@@ -90,6 +91,13 @@ class PathHelper:
         Возвращает путь к файлу базы данных
         """
         return cls.join(cls.get_root_path(), cls.__DATABASE_FILENAME)
+
+    @classmethod
+    def get_strings_folder(cls) -> str:
+        """
+        Возвращает путь к директории со строками
+        """
+        return cls.join(cls.get_resources_folder(), cls.ResourcesFolders.STRINGS)
 
     @classmethod
     def __find_root_path(cls, path: str) -> str:

@@ -1,10 +1,6 @@
 {
   "messageSymbolsLimit": 2048,
   "maxMessagePerMinute": 15,
-  "availableCommands": {
-    "/all": "Отметить всех в чате",
-    "/spam <n> <сообщение>": "Повторить <сообщение> <n> раз"
-  },
   "dateFormat": "%d-%m-%Y",
   "dateFormatWithTime": "%d-%m-%Y %H:%M:%S"
 }
