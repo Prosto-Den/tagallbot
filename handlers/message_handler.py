@@ -67,13 +67,18 @@ async def prekl_message(message: Message) -> None:
 
     match match_result:
         case strings.yes:
-            text = choice([strings.prekl1, strings.prekl2, strings.prekl3])
+            text: str = choice([strings.prekl1, strings.prekl2, strings.prekl3, strings.yes_image])
+            match text:
+                case strings.prekl3:
+                    stickers = ResourceHandler.get_stickers_resources()
+                    await bot.send_sticker(chat_id, stickers.kirkorov)
 
-            if text == strings.prekl3:
-                stickers = ResourceHandler.get_stickers_resources()
-                await bot.send_sticker(chat_id, stickers.kirkorov)
-            else:
-                await bot.send_message(chat_id, text)
+                case strings.yes_image:
+                    image = ResourceHandler.get_image_file(Images.mandarin_image)
+                    await bot.send_photo(chat_id, image)
+
+                case _:
+                    await bot.send_message(chat_id, text)
 
         case strings.no:
             await bot.send_message(chat_id, strings.prekl4)

@@ -28,6 +28,7 @@ class StringsModel(BaseModel):
     prekl3: str = Field(alias='prekl3', frozen=True)
     prekl4: str = Field(alias='prekl4', frozen=True)
     kok: str = Field(alias='kok', frozen=True)
+    yes_image: str = Field(alias='yesImage', frozen=True)
 
 
 class LoggerStringsModel(BaseModel):

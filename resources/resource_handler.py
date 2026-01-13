@@ -11,6 +11,7 @@ import os
 class Images:
     gru_image = 'gru.jpg'
     shrek_image = 'shrek_apologies.png'
+    mandarin_image = 'mandarin.jpg'
 
 
 class TempFiles:
