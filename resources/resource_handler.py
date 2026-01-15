@@ -8,6 +8,7 @@ from enum import StrEnum, auto
 import os
 
 
+#TODO отправку фотографий заменил на стикеры. Пока что фотографии больше не нужны, возможно стоит удалить
 class Images:
     gru_image = 'gru.jpg'
     shrek_image = 'shrek_apologies.png'

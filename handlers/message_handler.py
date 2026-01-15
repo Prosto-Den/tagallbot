@@ -26,33 +26,16 @@ async def repeat_message(message: Message) -> None:
 @messages_router.message(F.text, CustomFilters.is_gru_in_message)
 async def send_gru_image(message: Message) -> None:
     chat_id: int = message.chat.id
-
-    if gru_photo := ResourceHandler.get_image_file(Images.gru_image):
-        await bot.send_photo(chat_id, gru_photo, reply_to_message_id=message.message_id,
-                            reply_parameters=ReplyParameters(message_id=message.message_id,
+    await bot.send_sticker(chat_id, ResourceHandler.get_stickers_resources().gru,
+                           reply_to_message_id=message.message_id,
+                           reply_parameters=ReplyParameters(message_id=message.message_id,
                                                             chat_id=chat_id,
                                                             quote=bot.saved_msg[chat_id]))
-    else:
-        strings = ResourceHandler.get_strings_resources()
-        logger_strings = ResourceHandler.get_logger_strings_resources()
-        await message.reply(strings.send_photo_error)
-        bot.get_logger().warn(logger_strings.search_file_error)
 
 
 @messages_router.message(F.text, CustomFilters.is_apologies_in_message)
 async def send_shrek_apologies_image(message: Message) -> None:
-    if shrek_photo := ResourceHandler.get_image_file(Images.shrek_image):
-        chat_id: int = message.chat.id
-        match_result = bot.saved_msg.get(message.chat.id)
-        await bot.send_photo(chat_id, shrek_photo, reply_to_message_id=message.message_id,
-                            reply_parameters=ReplyParameters(message_id=message.message_id,
-                                                            chat_id=chat_id,
-                                                            quote=match_result))
-    else:
-        strings = ResourceHandler.get_strings_resources()
-        logger_strings = ResourceHandler.get_logger_strings_resources()
-        await message.reply(strings.send_photo_error)
-        bot.get_logger().warn(logger_strings.search_file_error)
+    await bot.send_sticker(message.chat.id, ResourceHandler.get_stickers_resources().shrek)
 
 
 @messages_router.message(F.text, CustomFilters.is_prekl)
@@ -67,15 +50,11 @@ async def prekl_message(message: Message) -> None:
 
     match match_result:
         case strings.yes:
-            text: str = choice([strings.prekl1, strings.prekl2, strings.prekl3, strings.yes_image])
+            text: str = choice([strings.prekl1, strings.prekl2, strings.prekl3])
             match text:
                 case strings.prekl3:
                     stickers = ResourceHandler.get_stickers_resources()
-                    await bot.send_sticker(chat_id, stickers.kirkorov)
-
-                case strings.yes_image:
-                    image = ResourceHandler.get_image_file(Images.mandarin_image)
-                    await bot.send_photo(chat_id, image)
+                    await bot.send_sticker(chat_id, choice([stickers.kirkorov, stickers.mandarin]))
 
                 case _:
                     await bot.send_message(chat_id, text)
