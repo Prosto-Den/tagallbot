@@ -26,5 +26,9 @@ jobs:
           username: ${{secrets.SERVER_USER}}
           key: ${{secrets.SERVER_SSH_KEY}}
           script: |
+            cd /root/tagallbot
+            systemctl stop bot.service
+            git checkout master
+            git pull
+            systemctl start bot.service
             cd ~
-            /root/update_bot.sh
