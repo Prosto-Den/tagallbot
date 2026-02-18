@@ -27,4 +27,4 @@ jobs:
           key: ${{secrets.SERVER_SSH_KEY}}
           script: |
             cd ~
-            ./update_bot.sh
+            /root/update_bot.sh
