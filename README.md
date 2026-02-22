@@ -1,13 +1,18 @@
 # Telegram bot for tagging all persons in chat
 
+>[!NOTE]
+> Below are instructions on how to set up and run your own bot based on the code from this repository. 
+> If you need the bot itself, it is available on Telegram for everyone interested: https://t.me/prostoTagAllBot
+
 ## How to set up the bot?
-1) Create virtual environment with `python -m venv .venv` command (write command in the terminal);
-2) Execute command `.venv/Scripts/activate` (on Windows) or `.venv/bin/activate`* (on Linux);
-3) Install libraries with `pip install -r requirements.txt` command;
-4) Create settings.json file in settings directory;
-5) Register on site https://my.telegram.org/auth. Get the **API ID** and **API HASH** values;
-6) Get the Bot token from [@BotFather](https://t.me/botfather);
-7) Copy this in your settings.json file. Replace values in file with yours:
+1) Copy the repository on your computer: `git clone https://github.com/Prosto-Den/tagallbot.git`;
+2) Create virtual environment with `python -m venv .venv` command (write command in the terminal);
+3) Execute command `.venv/Scripts/activate` (on Windows) or `source .venv/bin/activate` (on Linux);
+4) Install libraries with `pip install -r requirements.txt` command;
+5) Create settings.json file in settings directory (`settings/settings.json`);
+6) Register on site https://my.telegram.org/auth. Get the **API ID** and **API HASH** values;
+7) Get the Bot token from [@BotFather](https://t.me/botfather);
+8) Copy this in your settings.json file. Replace values in file with yours:
 ```json
 {
    "API_HASH": "your API HASH value here",
@@ -15,17 +20,14 @@
    "TOKEN": "your bot token here"
 }
 ```
-8) Add your bot to the group;
-9) Run `start_bot.py` file
+9) Add your bot to the group;
+10) Run `start_bot.py` file
 
 > [!IMPORTANT]
 > Don't forget to give admin rights to bot
 
-\* - In some situations on Linux this command may do nothing. If so, write path to pip for installing libraries on
-step 3 (`.venv/bin/pip install -r requirements.txt`)
-
 ## Available commands
-1) `/all` (or @prostoTagAllBot) - mention all users in chat;
+1) `/all` (or `@bot_nickname` where `bot_nickname` is your bot's nickname) - mention all users in chat;
 2) `/spam <amount> <message>` - repeat \<message\> \<amount\> times. Command will split text into several messages if  
 final text is too big. Don't use too often, your friends won't be happy :)
 3) `/react <emoji>` - set reaction on a message with \<emoji\>. \<emoji\> must be allowed to use. For use reply 
@@ -68,7 +70,7 @@ field_name: str = Field(alias='paste_the_copied_key_here', frozen=True)
 5) Now the sticker can be used in the code :)  
 P.S. To get the model with sticker data, use the method `ResourceHandler.get_stickers_resources()`
 
-Bot was created on `Python 3.12.4` but I guess it should work on lower versions either.
+Bot was created on `Python 3.12.4`.
 
 ---
 
@@ -76,14 +78,19 @@ Bot was created on `Python 3.12.4` but I guess it should work on lower versions 
 
 Для работы необходимо создать собственного бота через [@BotFather](https://t.me/BotFather)
 
+> [!NOTE]
+> Ниже представлена инструкция, как настроить и запустить своего бота на основе кода из этого 
+> репозитория. Если же вам нужен сам бот, он доступен в тг для всех желающих:  https://t.me/prostoTagAllBot
+
 ## Как настроить бота?
-1) Создайте виртуальную среду при помощи команды `python -m venv .venv` (команду пишем в командной строке);
-2) Выполните команду `.venv/Scripts/activate` (на Windows) или `.venv/bin/activate`* (на Linux);
-3) Установите необходимые библиотеки при помощи команды `pip install -r requirements.txt`;
-4) Создайте файл settings.json в папке settings;
-5) Зарегистрируйтесь на сайте https://my.telegram.org/auth. Сохраните **API ID** и **API HASH**;
-6) Получите токен вашего бота у [@BotFather](t.me/BotFather);
-7) Скопируйте следующие строчки в файл settings.json. Замените значения из файла на ваши значения:
+1) Скопируйте репозиторий на свой компьютер: `https://github.com/Prosto-Den/tagallbot.git`;
+2) Создайте виртуальную среду при помощи команды `python -m venv .venv` (команду пишем в командной строке);
+3) Выполните команду `.venv/Scripts/activate` (на Windows) или `source .venv/bin/activate`* (на Linux);
+4) Установите необходимые библиотеки при помощи команды `pip install -r requirements.txt`;
+5) Создайте файл settings.json в папке settings;
+6) Зарегистрируйтесь на сайте https://my.telegram.org/auth. Сохраните **API ID** и **API HASH**;
+7) Получите токен вашего бота у [@BotFather](t.me/BotFather);
+8) Скопируйте следующие строчки в файл settings.json. Замените значения из файла на ваши значения:
 ```json
 {
    "API_HASH": "ваш  API HASH",
@@ -91,17 +98,14 @@ Bot was created on `Python 3.12.4` but I guess it should work on lower versions 
    "TOKEN": "токен вашего бота"
 }
 ```
-8) Добавьте бота в ваш чат;
-9) Запустите файл `start_bot.py`.
+9) Добавьте бота в ваш чат;
+10) Запустите файл `start_bot.py`.
 
 > [!IMPORTANT]
 > Не забудьте выдать боту права администратора.
 
-\* - На Linux может быть такое, что использование команды ничего не даст. Тогда при установке библиотек (на шаге 3) надо
-прописать путь до pip целиком (`.venv/bin/pip install -r requirements.txt`)
-
 ## Доступные команды
-1) `/all` (или @prostoTagAllBot) - отметить всех пользователей в чате;
+1) `/all` (или `@bot_nickname`, где `bot_nickname` - никнейм вашего бота) - отметить всех пользователей в чате;
 2) `/spam <amount> <message>` - повторить фразу \<message\> \<amount\> раз. Если итоговый текст получится слишком 
 большим, он будет разделён на несколько сообщений. Не используйте слишком часто, друзья рады не будут :)
 3) `/react <emoji>` - поставить реакцию на сообщение. Реакция должна быть разрешена в чате. Чтобы поставить реакцию,
@@ -145,4 +149,4 @@ P.S. Для получения файла для отправки в сообщ�
 5) Теперь стикером можно пользваться в коде :)  
 P.S. Для получения модели с данными по стикерам используйте метод ResourceHandler.get_stickers_resources()
 
-Написан на `Python 3.12.4`, но на ранних версиях, наверное, тоже будет работать.
+Написан на `Python 3.12.4`.
