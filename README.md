@@ -9,10 +9,10 @@
 2) Create virtual environment with `python -m venv .venv` command (write command in the terminal);
 3) Execute command `.venv/Scripts/activate` (on Windows) or `source .venv/bin/activate` (on Linux);
 4) Install libraries with `pip install -r requirements.txt` command;
-5) Create settings.json file in settings directory (`settings/settings.json`);
+5) Create bot_config.json file in settings directory (`settings/bot_config.json`);
 6) Register on site https://my.telegram.org/auth. Get the **API ID** and **API HASH** values;
 7) Get the Bot token from [@BotFather](https://t.me/botfather);
-8) Copy this in your settings.json file. Replace values in file with yours:
+8) Copy this in your bot_config.json file. Replace values in file with yours:
 ```json
 {
    "API_HASH": "your API HASH value here",
@@ -87,10 +87,10 @@ Bot was created on `Python 3.12.4`.
 2) Создайте виртуальную среду при помощи команды `python -m venv .venv` (команду пишем в командной строке);
 3) Выполните команду `.venv/Scripts/activate` (на Windows) или `source .venv/bin/activate`* (на Linux);
 4) Установите необходимые библиотеки при помощи команды `pip install -r requirements.txt`;
-5) Создайте файл settings.json в папке settings;
+5) Создайте файл bot_config.json в папке settings (`settings/bot_config.json`);
 6) Зарегистрируйтесь на сайте https://my.telegram.org/auth. Сохраните **API ID** и **API HASH**;
 7) Получите токен вашего бота у [@BotFather](t.me/BotFather);
-8) Скопируйте следующие строчки в файл settings.json. Замените значения из файла на ваши значения:
+8) Скопируйте следующие строчки в файл bot_config.json. Замените значения из файла на ваши значения:
 ```json
 {
    "API_HASH": "ваш  API HASH",
